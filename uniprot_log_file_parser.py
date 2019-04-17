@@ -14,7 +14,7 @@ def is_non_browser(user_agent):
 
 
 def is_short(user_agent):
-    return len(user_agent) > 40
+    return len(user_agent) < 40
 
 
 def is_success(response):
