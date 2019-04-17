@@ -9,8 +9,12 @@ non_browser_pattern = get_non_browser_pattern.get_non_browser_pattern()
 re_non_browser = re.compile(non_browser_pattern, re.IGNORECASE)
 
 
-def is_browser(user_agent):
-    return len(user_agent) > 50 and not re_non_browser.search(user_agent)
+def is_non_browser(user_agent):
+    return re_non_browser.search(user_agent)
+
+
+def is_short(user_agent):
+    return len(user_agent) > 40
 
 
 def is_success(response):
@@ -45,6 +49,7 @@ def parse_log_file(log_file_path):
     )
 
     browser_requests = []
+    user_agent_too_short = []
     with open(log_file_path, 'r', encoding='unicode_escape') as f:
         for line in f:
             line = parse.unquote(parse.unquote(line))
@@ -54,7 +59,11 @@ def parse_log_file(log_file_path):
             user_agent = m.group('user_agent')
             response = m.group('response')
             resource = m.group('resource')
-            if is_browser(user_agent) and is_success(response) and is_query(resource) and not contains_fil(resource):
+            if is_non_browser(user_agent):
+                continue
+            if is_short(user_agent):
+                user_agent_too_short.append(user_agent)
+            if is_success(response) and is_query(resource) and not contains_fil(resource):
                 ip = m.group('ip1')
                 date_time = m.group('date_time')
                 referer = m.group('referer')
@@ -66,25 +75,48 @@ def parse_log_file(log_file_path):
                     'user_agent': user_agent,
                 })
 
-    return browser_requests
+    return browser_requests, user_agent_too_short
 
 
-def write_to_json_file(obj, json_file_path):
-    with open(json_file_path, 'w') as f:
-        json.dump(obj, f, indent=4)
-
-
-def get_json_out_filename(log_file_path):
+def get_root_out_filename(log_file_path):
     file_path, filename = path.split(log_file_path)
     _, directory = path.split(file_path)
     return f'{directory}__{filename}.json'
 
 
+def get_json_out_filename(log_file_path):
+    root_out_filename = get_root_out_filename(log_file_path)
+    return f'{root_out_filename}.json'
+
+
+def get_too_short_out_filename(log_file_path):
+    root_out_filename = get_root_out_filename(log_file_path)
+    return f'{root_out_filename}.user_agent_too_short.txt'
+
+
+def write_to_json_file(obj, file_path):
+    with open(file_path, 'w') as f:
+        json.dump(obj, f, indent=4)
+
+
+def write_user_agent_too_short_to_file(user_agent_too_short, file_path):
+    with open(file_path, 'w') as f:
+        f.write('\n'.join(user_agent_too_short))
+
+
 def main(log_file_path, out_directory):
-    valid_browser_requests = parse_log_file(log_file_path)
+    valid_browser_requests, user_agent_too_short = parse_log_file(
+        log_file_path)
+
     json_out_filename = get_json_out_filename(log_file_path)
     json_file_path = path.join(out_directory, json_out_filename)
     write_to_json_file(valid_browser_requests, json_file_path)
+
+    too_short_out_filename = get_too_short_out_filename(log_file_path)
+    too_short_out_path = path.join(
+        out_directory, too_short_out_filename)
+    write_user_agent_too_short_to_file(
+        user_agent_too_short, too_short_out_path)
 
 
 if __name__ == '__main__':
