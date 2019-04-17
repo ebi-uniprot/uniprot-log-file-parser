@@ -63,6 +63,7 @@ def parse_log_file(log_file_path):
                 continue
             if is_short(user_agent):
                 user_agent_too_short.append(user_agent)
+                continue
             if is_success(response) and is_query(resource) and not contains_fil(resource):
                 ip = m.group('ip1')
                 date_time = m.group('date_time')
