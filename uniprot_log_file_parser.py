@@ -81,7 +81,7 @@ def parse_log_file(log_file_path):
 def get_root_out_filename(log_file_path):
     file_path, filename = path.split(log_file_path)
     _, directory = path.split(file_path)
-    return f'{directory}__{filename}.json'
+    return f'{directory}__{filename}'
 
 
 def get_json_out_filename(log_file_path):
