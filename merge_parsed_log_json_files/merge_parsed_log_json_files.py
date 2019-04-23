@@ -21,7 +21,7 @@ def merge_parsed_log_json_files(parsed_log_directory, merged_parsed_log_path):
     all_parsed = []
     for i, parsed_log in enumerate(parsed_logs):
         all_parsed += read_json_file(parsed_log)
-        print(i, len(all_parsed))
+        print(i, len(all_parsed), flush=True)
     write_to_json_file(all_parsed, merged_parsed_log_path)
 
 
