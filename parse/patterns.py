@@ -10,8 +10,49 @@ def fetch_json(url):
 
 
 def get_crawler_user_agents():
+    hardcoded_crawlers = [
+        r'bot',
+        r'crawler',
+        r'uniprot',
+        r'monitor',
+        r'the\sknowledge\sai',
+        r'searchhelper',
+        r'winhttp',
+        r'scraper',
+        r'skyline',
+        r'\-',
+        r'nucpred'
+        r'the\sknowledge\sai',
+        r'arachni',
+        r'siteuptime',
+        r'microsoft\soffice',
+    ]
+    re_hardcoded_crawlers = re.compile(
+        '(' + '|'.join(hardcoded_crawlers) + ')', re.IGNORECASE)
     CRAWLER_USER_AGENTS = 'https://raw.githubusercontent.com/monperrus/crawler-user-agents/master/crawler-user-agents.json'
-    return fetch_json(CRAWLER_USER_AGENTS)
+    crawlers = fetch_json(CRAWLER_USER_AGENTS)
+    crawlers_patterns = [crawlers['pattern'] for crawler in crawlers]
+    for p in crawlers_patterns:
+        p = p.lower()
+        if re_non_browser_patterns.search(el) or el in ['[ww]get', 'livelap[bb]ot']:
+            continue
+        p = p.replace(r'-', r'\-') \
+            .replace(r'.com', r'') \
+            .replace(r'.', r'\.') \
+            .replace(r'\/', r'') \
+            .replace(r'(^| )', r'') \
+            .replace(r'^', r'') \
+            .replace(r' ', r'\s') \
+            .replace(r'!', r'\!')
+        non_browser_patterns.append(p)
+
+
+def get_bot_pattern():
+    pass
+
+
+def get_api_pattern():
+    pass
 
 
 def get_non_browser_pattern():

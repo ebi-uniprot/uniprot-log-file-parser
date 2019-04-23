@@ -10,7 +10,7 @@ def read_json_file(json_file):
         return json.load(f)
 
 
-def write_to_json_file(obj, file_path):
+def write_json_file(obj, file_path):
     with open(file_path, 'w') as f:
         json.dump(obj, f, indent=4)
 
@@ -22,7 +22,7 @@ def merge_parsed_log_json_files(parsed_log_directory, merged_parsed_log_path):
     for i, parsed_log in enumerate(parsed_logs):
         all_parsed += read_json_file(parsed_log)
         print(i, len(all_parsed), flush=True)
-    write_to_json_file(all_parsed, merged_parsed_log_path)
+    write_json_file(all_parsed, merged_parsed_log_path)
 
 
 def get_arguments():
