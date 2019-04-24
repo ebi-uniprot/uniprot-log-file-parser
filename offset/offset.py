@@ -18,7 +18,7 @@ def write_json_file(obj, file_path):
 
 
 def get_out_file_path(log_json_file, output_directory):
-    filename = os.path.splitext(log_json_file)[0]
+    filename = os.path.splitext(os.path.basename(log_json_file))[0]
     return os.path.join(output_directory, f'{filename}.offset-counts.json')
 
 
@@ -63,8 +63,12 @@ def get_arguments():
 
 def main():
     log_json_file, output_directory = get_arguments()
+    print(f'log_json_file={log_json_file}', flush=True)
+    print(f'output_directory={output_directory}', flush=True)
     offset_counts = get_offset_counts_from_log_json_file(log_json_file)
     out_file_path = get_out_file_path(log_json_file, output_directory)
+    print(
+        f'writing {len(offset_counts)} counts to {out_file_path}', flush=True)
     write_json_file(offset_counts, out_file_path)
 
 
