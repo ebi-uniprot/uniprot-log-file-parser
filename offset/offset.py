@@ -47,7 +47,7 @@ def get_offset_counts_from_log_json_file(log_json_file):
             else:
                 offsets.append('not_specified')
         except Exception as e:
-            print(f'Exception {e} occured with {resource}.')
+            print(f'Exception {e} occured with {resource}.', flush=True)
     return Counter(offsets)
 
 
