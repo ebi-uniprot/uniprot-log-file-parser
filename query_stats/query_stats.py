@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import json
-import urllib
+import urllib.parse
 import luqum.parser
 import luqum.tree
 from collections import defaultdict, Counter
