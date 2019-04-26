@@ -64,11 +64,6 @@ def write_to_json_file(obj, file_path):
         json.dump(obj, f, indent=4)
 
 
-def get_field_to_value_counts_json_file_path(log_json_file):
-    root_file_path = os.path.splitext(log_json_file)[0]
-    return f'{root_file_path}.field_to_value_counts.json'
-
-
 def read_json_file(json_file):
     with open(json_file) as f:
         return json.load(f)
