@@ -89,7 +89,7 @@ def get_query_stats_counts_from_log_json_file(log_json_file):
 
 
 def get_out_file_path(log_json_file, output_directory):
-    filename = os.path.splitext(log_json_file)[0]
+    filename = os.path.splitext(os.path.basename(log_json_file))[0]
     return os.path.join(output_directory, f'{filename}.query-stats-counts.json')
 
 
@@ -105,8 +105,12 @@ def get_arguments():
 
 def main():
     log_json_file, output_directory = get_arguments()
+    print(f'log_json_file={log_json_file}', flush=True)
+    print(f'output_directory={output_directory}', flush=True)
     counts = get_query_stats_counts_from_log_json_file(log_json_file)
     out_file_path = get_out_file_path(log_json_file, output_directory)
+    print(
+        f'writing {len(counts)} counts to {out_file_path}', flush=True)
     write_to_json_file(counts, out_file_path)
 
 
