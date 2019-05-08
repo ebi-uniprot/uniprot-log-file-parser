@@ -17,7 +17,7 @@ def write_json_file(obj, file_path):
 
 
 def merge_files(offset_counts_directory, merged_path):
-    pattern = '*.offset-counts.json'
+    pattern = '*.number-column-counts.json'
     files = glob(os.path.join(offset_counts_directory, pattern))
     merged = Counter()
     for f in files:
@@ -28,8 +28,8 @@ def merge_files(offset_counts_directory, merged_path):
 
 def get_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('offset_counts_directory', type=str,
-                        help='The directory containing the json offset count files filenames of the pattern *.offset-counts.json')
+    parser.add_argument('number_column_counts_directory', type=str,
+                        help='The directory containing the json offset count files filenames of the pattern *.number-column-counts.json')
     parser.add_argument('merged_path', type=str,
                         help='The path where the resulting json file will be saved')
     args = parser.parse_args()
