@@ -37,7 +37,7 @@ def get_url_from_resource(resource):
 
 def get_number_columns(params):
     if 'columns' in params:
-        return len(params['columns'])
+        return len(params['columns'][0].split(','))
     else:
         return 0
 
