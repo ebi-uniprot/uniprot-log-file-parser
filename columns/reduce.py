@@ -33,7 +33,7 @@ def get_arguments():
     parser.add_argument('merged_path', type=str,
                         help='The path where the resulting json file will be saved')
     args = parser.parse_args()
-    return args.offset_counts_directory, args.merged_path
+    return args.number_column_counts_directory, args.merged_path
 
 
 def main():
