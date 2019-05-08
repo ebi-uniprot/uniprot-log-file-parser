@@ -107,7 +107,6 @@ def get_offset_counts_from_log_json_file(log_json_file):
         except Exception as e:
             print(f'Exception {e} occured with {resource}.',
                   flush=True, file=sys.stderr)
-            break
     return Counter(offsets)
 
 
