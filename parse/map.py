@@ -74,13 +74,13 @@ def parse_log_file(log_file_path):
             user_agent = m.group('user_agent')
             response = m.group('response')
             resource = m.group('resource')
-            if is_short(user_agent):
-                user_agents_too_short.append(user_agent)
-                continue
             if is_success(response) and \
                     is_query(resource) and \
                     is_browser(user_agent) and \
                     not contains_fil(resource):
+                if is_short(user_agent):
+                    user_agents_too_short.append(user_agent)
+                    continue
                 ip = m.group('ip1')
                 date_time = m.group('date_time')
                 referer = m.group('referer')

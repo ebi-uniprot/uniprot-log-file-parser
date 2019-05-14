@@ -1,8 +1,9 @@
 #!/bin/bash
-LOG_JSON_DIRECTORY=~/parsed_logs
+LOG_PARSING_DIRECTORY=/net/isilonP/public/rw/homes/uni_adm/tmp/log_parsing/
+LOG_JSON_DIRECTORY=$LOG_PARSING_DIRECTORY/json
 OUT_DIRECTORY=~/jobs/out/columns
 ERROR_DIRECTORY=~/jobs/error/columns
-RESULTS_DIRECTORY=~/parsed_logs/columns
+LOG_JSON_DIRECTORY=$LOG_PARSING_DIRECTORY/columns
 
 LOG_JSON_FILE_LIST=~/log_json_file_list.txt
 find $LOG_JSON_DIRECTORY -name *.log.json > $LOG_JSON_FILE_LIST
