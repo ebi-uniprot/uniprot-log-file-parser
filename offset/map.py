@@ -41,7 +41,7 @@ def get_offset(params):
         assert len(offset) == 1
         return int(offset[0])
     else:
-        return 0
+        return -1
 
 
 def equal_sans_offset(params1, params2):
@@ -69,6 +69,10 @@ def safe_remove(s, k):
         return s
 
 
+def contains_format(resource):
+    return '&format=' in resource
+
+
 def is_pagination_request(params1, params2):
     keys1 = set(params1.keys())
     keys2 = set(params2.keys())
@@ -93,12 +97,14 @@ def get_offset_counts_from_log_json_file(log_json_file):
     offsets = []
     for entry in log:
         resource = entry['resource']
-        referer = entry['referer']
+        if contains_format(resource):
+            continue
         try:
             url = get_url_from_resource(resource)
             resource_params = get_params(url)
             resource_offset = get_offset(resource_params)
-            if resource_offset:
+            if resource_offset >= 0:
+                referer = entry['referer']
                 referer_params = get_params(referer)
                 if is_pagination_request(resource_params, referer_params):
                     offsets.append(resource_offset)

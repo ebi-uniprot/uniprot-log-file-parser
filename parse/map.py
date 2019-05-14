@@ -15,8 +15,8 @@ non_browser_pattern = get_non_browser_pattern()
 re_non_browser = re.compile(non_browser_pattern, re.IGNORECASE)
 
 
-def is_non_browser(user_agent):
-    return re_non_browser.search(user_agent)
+def is_browser(user_agent):
+    return not re_non_browser.search(user_agent)
 
 
 def is_short(user_agent):
@@ -55,7 +55,7 @@ def parse_log_file(log_file_path):
     )
 
     browser_requests = []
-    user_agent_too_short = []
+    user_agents_too_short = []
     with open(log_file_path, 'r', encoding='unicode_escape') as f:
         line_number = 0
         while True:
@@ -63,23 +63,24 @@ def parse_log_file(log_file_path):
             try:
                 line = f.readline()
             except Exception as e:
-                print(f'[line {line_number}]: {e}')
+                print(f'[line {line_number}]: {e}', flush=True)
             if not line:
                 break
             line = parse.unquote(parse.unquote(line))
             m = re_log_line.match(line)
             if not m:
-                print(f'Skipping (unable to parse): {line}')
+                print(f'Skipping (unable to parse): {line}', flush=True)
                 continue
             user_agent = m.group('user_agent')
             response = m.group('response')
             resource = m.group('resource')
-            if is_non_browser(user_agent):
-                continue
             if is_short(user_agent):
-                user_agent_too_short.append(user_agent)
+                user_agents_too_short.append(user_agent)
                 continue
-            if is_success(response) and is_query(resource) and not contains_fil(resource):
+            if is_success(response) and \
+                    is_query(resource) and \
+                    is_browser(user_agent) and \
+                    not contains_fil(resource):
                 ip = m.group('ip1')
                 date_time = m.group('date_time')
                 referer = m.group('referer')
@@ -91,7 +92,7 @@ def parse_log_file(log_file_path):
                     'user_agent': user_agent,
                 })
 
-    return browser_requests, user_agent_too_short
+    return browser_requests, user_agents_too_short
 
 
 def get_root_out_filename(log_file_path):
@@ -107,7 +108,7 @@ def get_json_out_filename(log_file_path):
 
 def get_too_short_out_filename(log_file_path):
     root_out_filename = get_root_out_filename(log_file_path)
-    return f'{root_out_filename}.user_agent_too_short.txt'
+    return f'{root_out_filename}.user_agents_too_short.txt'
 
 
 def write_to_json_file(obj, file_path):
@@ -115,15 +116,26 @@ def write_to_json_file(obj, file_path):
         json.dump(obj, f, indent=4)
 
 
-def write_user_agent_too_short_to_file(user_agent_too_short, file_path):
+def write_user_agents_too_short_to_file(user_agents_too_short, file_path):
     with open(file_path, 'w') as f:
-        f.write('\n'.join(user_agent_too_short))
+        f.write('\n'.join(user_agents_too_short))
 
 
-def main(log_file_path, out_directory):
+def get_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('log_file_path', type=str,
+                        help='The path to log file to be parsed')
+    parser.add_argument('out_directory', type=str,
+                        help='The path to the directory for the resulting json file to be saved')
+    args = parser.parse_args()
+    return args.log_file_path, args.out_directory
+
+
+def main():
+    log_file_path, out_directory = get_arguments()
     print(
-        f'Parsing: {log_file_path} and saving output to directory: {out_directory}')
-    valid_browser_requests, user_agent_too_short = parse_log_file(
+        f'Parsing: {log_file_path} and saving output to directory: {out_directory}', flush=True)
+    valid_browser_requests, user_agents_too_short = parse_log_file(
         log_file_path)
 
     if valid_browser_requests:
@@ -131,19 +143,13 @@ def main(log_file_path, out_directory):
         json_file_path = path.join(out_directory, json_out_filename)
         write_to_json_file(valid_browser_requests, json_file_path)
 
-    if user_agent_too_short:
+    if user_agents_too_short:
         too_short_out_filename = get_too_short_out_filename(log_file_path)
         too_short_out_path = path.join(
             out_directory, too_short_out_filename)
-        write_user_agent_too_short_to_file(
-            user_agent_too_short, too_short_out_path)
+        write_user_agents_too_short_to_file(
+            user_agents_too_short, too_short_out_path)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('log_file_path', type=str,
-                        help='The path to log file to be parsed')
-    parser.add_argument('out_directory', type=str,
-                        help='The path to the directory for the resulting json file to be saved')
-    args = parser.parse_args()
-    main(args.log_file_path, args.out_directory)
+    main()
