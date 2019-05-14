@@ -44,24 +44,6 @@ def get_offset(params):
         return -1
 
 
-def equal_sans_offset(params1, params2):
-    keys1 = params1.keys()
-    keys2 = params2.keys()
-    try:
-        keys1.remove('offset')
-        keys2.remove('offset')
-    except:
-        pass
-    if keys1 != keys2:
-        return False
-    for key in keys1:
-        value1 = params1[key]
-        value2 = params1[key]
-        if value1 != value2:
-            return False
-    return True
-
-
 def safe_remove(s, k):
     try:
         return s.remove(k)
@@ -108,11 +90,14 @@ def get_offset_counts_from_log_json_file(log_json_file):
                 referer_params = get_params(referer)
                 if is_pagination_request(resource_params, referer_params):
                     offsets.append(resource_offset)
+                else:
+                    print('Not a pagination request:', flush=True)
+                    print(entry, flush=True)
+                    print('-'*10, flush=True)
             else:
                 offsets.append('not_specified')
         except Exception as e:
-            print(f'Exception {e} occured with {resource}.',
-                  flush=True, file=sys.stderr)
+            print(f'Exception {e} occured with {resource}.', flush=True)
     return Counter(offsets)
 
 
