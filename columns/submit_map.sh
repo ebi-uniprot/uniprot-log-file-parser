@@ -11,4 +11,4 @@ n=$(wc -l < $JSON_FILE_LIST)
 bsub -J"columns[1-$n]" \
 -o $OUT_DIRECTORY/%J-%I \
 -e $ERROR_DIRECTORY/%J-%I \
-./map_wrapper.sh $JSON_FILE_LIST $OFFSET_DIRECTORY
+./map_wrapper.sh $JSON_FILE_LIST $COLUMNS_DIRECTORY
