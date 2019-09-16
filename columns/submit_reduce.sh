@@ -1,4 +1,6 @@
 #!/bin/bash
+source ../config.sh
+
 MERGED_PATH=$COLUMNS_DIRECTORY/merged.json
 
 mkdir -p $OUT_DIRECTORY

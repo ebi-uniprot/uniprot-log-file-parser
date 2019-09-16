@@ -1,4 +1,6 @@
 #!/bin/bash
+source ../config.sh
+
 MERGED_PATH=$FIELD_TO_VALUES_DIRECTORY/merged.json
 MERGED_COUNTS_PATH=$FIELD_TO_VALUES_DIRECTORY/merged_counts.json
 
