@@ -22,7 +22,7 @@ def write_json_file(obj, file_path):
 
 def get_out_file_path(log_json_file, output_directory):
     filename = os.path.splitext(os.path.basename(log_json_file))[0]
-    return os.path.join(output_directory, f'{filename}.number-column-counts.json')
+    return os.path.join(output_directory, f'{filename}.field-to-values.json')
 
 
 def merge_list_defaultdicts(d1, d2):
