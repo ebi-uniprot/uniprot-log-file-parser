@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import json
 import urllib.parse
+from collections import defaultdict, Counter
 import luqum.parser
 import luqum.tree
-from collections import defaultdict, Counter
 from luqum.utils import UnknownOperationResolver
 import re
 import os.path

@@ -4,7 +4,7 @@ import os.path
 import json
 import argparse
 from collections import defaultdict, Counter
-import urllib
+import urllib.parse
 import luqum.parser
 import luqum.tree
 import re
