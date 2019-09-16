@@ -21,8 +21,8 @@ def write_json_file(obj, file_path):
 
 
 def get_out_file_path(log_json_file, output_directory):
-    filename = os.path.splitext(log_json_file)[0]
-    return os.path.join(output_directory, f'{filename}.field-to-values.json')
+    filename = os.path.splitext(os.path.basename(log_json_file))[0]
+    return os.path.join(output_directory, f'{filename}.number-column-counts.json')
 
 
 def merge_list_defaultdicts(d1, d2):
@@ -103,9 +103,13 @@ def get_arguments():
 
 def main():
     log_json_file, output_directory = get_arguments()
+    print(f'log_json_file={log_json_file}', flush=True)
+    print(f'output_directory={output_directory}', flush=True)
     field_to_value_counts_json_file_path = get_field_to_value_counts_from_log_json_file(
         log_json_file)
     out_file_path = get_out_file_path(log_json_file, output_directory)
+    print(
+        f'writing {len(field_to_value_counts_json_file_path)} field-value counts to {out_file_path}', flush=True)
     write_json_file(field_to_value_counts_json_file_path, out_file_path)
 
 
