@@ -1,5 +1,5 @@
 #!/bin/bash
-LOG_PARSING_DIRECTORY=/net/isilonP/public/rw/homes/uni_adm/tmp/log_parsing/
+LOG_PARSING_DIRECTORY=/net/isilonP/public/rw/homes/uni_adm/tmp/log_parsing/20200612
 JSON_DIRECTORY=$LOG_PARSING_DIRECTORY/json
 COLUMNS_DIRECTORY=$LOG_PARSING_DIRECTORY/columns
 OFFSET_DIRECTORY=$LOG_PARSING_DIRECTORY/offset
