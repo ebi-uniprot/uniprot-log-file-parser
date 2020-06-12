@@ -44,7 +44,7 @@ domains = [
     'keywords',
 ]
 
-re_domain = re.compile(r'GET\s/(' + '|'.join(domains) + ')')
+re_domain = re.compile(r'GET\s/(' + '|'.join(domains) + r')/')
 
 def get_domain(resource):
     m = re_domain.match(resource)
