@@ -156,10 +156,10 @@ def main():
         log_file_path)
 
     if valid_browser_requests:
-        for domain, requests in valid_browser_requests.items():
-            json_out_filename = get_json_out_filename(domain, log_file_path, requests)
+        for domain, domain_requests in valid_browser_requests.items():
+            json_out_filename = get_json_out_filename(domain, log_file_path, domain_requests)
             json_file_path = path.join(out_directory, json_out_filename)
-            write_to_json_file(valid_browser_requests, json_file_path)
+            write_to_json_file(domain_requests, json_file_path)
 
     if user_agents_too_short:
         too_short_out_filename = get_too_short_out_filename(log_file_path)
