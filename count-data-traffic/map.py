@@ -4,7 +4,7 @@ from urllib import parse, request
 from os import path
 import argparse
 from collections import defaultdict
-from dateutil import parser
+from datetime import datetime
 
 
 def get_bot_regexp():
@@ -95,7 +95,7 @@ def parse_log_file(log_file_path):
             response = m.group('response')
             if is_success(response) and not is_bot(user_agent):
                 date_time = m.group('date_time')
-                date_time = parser.parse(date_time)
+                date_time = datetime.strptime(date_time, '%d/%b/%Y:%H:%M:%S %z')
                 date_time = date_time.strftime("%Y-%m-%d")
                 try:
                     total_bytes[date_time] += int(float(m.group('bytes')))
