@@ -19,7 +19,6 @@ def get_user_agent_regex(includeProgrammatic=True):
     regexs = [
         r'bot',
         r'crawler',
-        r'uniprot',
         r'monitor',
         r'the\sknowledge\sai',
         r'searchhelper',
@@ -27,12 +26,13 @@ def get_user_agent_regex(includeProgrammatic=True):
         r'scraper',
         r'skyline',
         r'\-',
-        r'nucpred'
+        r'nucpred',
         r'the\sknowledge\sai',
         r'arachni',
         r'siteuptime',
         r'microsoft\soffice',
         r'riddler',
+        r'validator',
     ]
 
     programmatic_regexs = [
@@ -58,13 +58,16 @@ def get_user_agent_regex(includeProgrammatic=True):
         if regex.search(p):  # or p in ['[ww]get', 'livelap[bb]ot']:
             continue
         p = p.replace(r'-', r'\-') \
-            .replace(r'.com', r'') \
             .replace(r'.', r'\.') \
             .replace(r'\/', r'') \
             .replace(r'(^| )', r'') \
             .replace(r'^', r'') \
             .replace(r' ', r'\s') \
-            .replace(r'!', r'\!')
+            .replace(r'!', r'\!') \
+            .replace(r'www.', r'')\
+            .replace(r'www\\.', r'')
+        p = re.sub(r'\.com.*', r'', p)
+        p = re.sub(r'\\+$', r'', p)
         regexs.append(p)
 
     return '(' + '|'.join(regexs) + ')'
