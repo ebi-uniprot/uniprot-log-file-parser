@@ -1,5 +1,5 @@
 #!/bin/bash
-source ../config.sh
+source config.sh
 
 mkdir -p $REDUCE_DIRECTORY
 

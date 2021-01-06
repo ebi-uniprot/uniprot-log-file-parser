@@ -1,4 +1,5 @@
 #!/bin/bash
+source config.sh
 
 mkdir -p $OUT_DIRECTORY
 mkdir -p $ERROR_DIRECTORY
