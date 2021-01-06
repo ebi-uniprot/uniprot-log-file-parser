@@ -54,6 +54,7 @@ class LogEntry():
         if not m:
             return
 
+        self.line = line
         self.date_time = m.group('date_time')
         self.user_agent = m.group('user_agent')
         self.response = m.group('response')
@@ -92,7 +93,7 @@ class LogEntry():
         try:
             return int(self.response) == 200
         except ValueError as e:
-            print(e, flush=True, file=sys.stderr)
+            print(self.line, e, flush=True, file=sys.stderr)
             return False
 
     def query_contains_fil(self):
@@ -111,7 +112,7 @@ class LogEntry():
                 return 0
             return int(float(self.bytes))
         except ValueError as e:
-            print(e, flush=True, file=sys.stderr)
+            print(self.line, e, flush=True, file=sys.stderr)
 
     def get_domain(self):
         paths = PurePosixPath(self.resource).parts

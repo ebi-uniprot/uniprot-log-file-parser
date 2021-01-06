@@ -78,11 +78,11 @@ def parse_log_file(log_file_path):
                 if query:
                     to_write['query'] = query
                     lines_to_write.append(to_write)
-                    _field_to_values = get_field_to_value_counts_from_query(
-                        query)
-                    # print(query, _field_to_values)
-                    field_to_values = merge_list_defaultdicts(
-                        field_to_values, _field_to_values)
+                    # _field_to_values = get_field_to_value_counts_from_query(
+                    #     query)
+                    # # print(query, _field_to_values)
+                    # field_to_values = merge_list_defaultdicts(
+                    #     field_to_values, _field_to_values)
             except Exception as e:
                 print(f'Exception {e} occured: {line}',
                       flush=True, file=sys.stderr)
