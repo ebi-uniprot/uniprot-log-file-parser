@@ -5,7 +5,7 @@ from os import path
 import argparse
 from collections import defaultdict
 from datetime import datetime
-import traceback
+import sys
 
 from .log_entry import LogEntry
 from .lucene_query import get_field_to_value_counts_from_query
@@ -33,12 +33,14 @@ def parse_log_file(log_file_path):
             try:
                 line = f.readline()
             except Exception as e:
-                print(f'[line {line_number}]: {e}', flush=True)
+                print(f'[line {line_number}]: {e}',
+                      flush=True, file=sys.stderr)
             if not line:
                 break
             entry = LogEntry(line)
             if not entry:
-                print(f'Skipping (unable to parse): {line}', flush=True)
+                print(
+                    f'Skipping (unable to parse): {line}', flush=True, file=sys.stderr)
             if not entry.is_success():
                 continue
             if entry.is_bot():
@@ -82,8 +84,8 @@ def parse_log_file(log_file_path):
                     field_to_values = merge_list_defaultdicts(
                         field_to_values, _field_to_values)
             except Exception as e:
-                print(f'Exception {e} occured: {line}')
-                print(traceback.format_exc())
+                print(f'Exception {e} occured: {line}',
+                      flush=True, file=sys.stderr)
 
     return tally_n_requests, tally_bytes, tally_user_type, lines_to_write, field_to_values
 
@@ -101,7 +103,7 @@ def get_arguments():
 def main():
     log_file_path, out_directory = get_arguments()
     print(
-        f'Parsing: {log_file_path} and saving output to directory: {out_directory}', flush=True)
+        f'Parsing: {log_file_path} and saving output to directory: {out_directory}')
     tally_n_requests, tally_bytes, tally_user_type, lines_to_write, _ = parse_log_file(
         log_file_path)
     if tally_n_requests:

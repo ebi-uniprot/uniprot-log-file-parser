@@ -4,6 +4,7 @@ import urllib.parse
 from pathlib import PurePosixPath
 from datetime import datetime
 from ua_parser import user_agent_parser
+import sys
 
 from .patterns import BOT_RE, PROGRAMMATIC_RE, UNKNOWN_RE
 from .utils import clean
@@ -22,6 +23,7 @@ DOMAINS = [
     'keywords',
     'mapping'
 ]
+
 
 ENTRY_RE = re.compile(
     r'^(?P<ip1>.*?) '
@@ -87,7 +89,11 @@ class LogEntry():
         return ua['user_agent']['family']
 
     def is_success(self):
-        return int(self.response) == 200
+        try:
+            return int(self.response) == 200
+        except ValueError as e:
+            print(e, flush=True, file=sys.stderr)
+            return False
 
     def query_contains_fil(self):
         """
@@ -105,7 +111,7 @@ class LogEntry():
                 return 0
             return int(float(self.bytes))
         except ValueError as e:
-            print(e)
+            print(e, flush=True, file=sys.stderr)
 
     def get_domain(self):
         paths = PurePosixPath(self.resource).parts

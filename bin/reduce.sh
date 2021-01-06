@@ -1,6 +1,8 @@
 #!/bin/bash
 source config.sh
 
+MAP_DIRECTORY=$1
+
 mkdir -p $REDUCE_DIRECTORY
 
 cat $MAP_DIRECTORY/*.bytes.csv > $REDUCE_DIRECTORY/bytes.csv

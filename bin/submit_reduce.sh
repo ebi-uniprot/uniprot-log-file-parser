@@ -7,4 +7,4 @@ mkdir -p $ERROR_DIRECTORY
 bsub \
 -o $OUT_DIRECTORY/reduce.o \
 -e $ERROR_DIRECTORY/reduce.e \
-./reduce.sh
+./reduce.sh $1
