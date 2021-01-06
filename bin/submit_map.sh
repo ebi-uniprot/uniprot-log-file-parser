@@ -12,4 +12,4 @@ bsub \
 -J"parse[1-$n]" \
 -o $OUT_DIRECTORY/%J-%I \
 -e $ERROR_DIRECTORY/%J-%I \
-./map_wrapper.sh $LOG_FILE_LIST $JSON_DIRECTORY
+./map_wrapper.sh $LOG_FILE_LIST $MAP_DIRECTORY
