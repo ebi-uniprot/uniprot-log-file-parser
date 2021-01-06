@@ -1,7 +1,6 @@
 #!/bin/bash
-source config.sh
-
-MAP_DIRECTORY=$1
+MAP_DIRECTORY=$1/map
+REDUCE_DIRECTORY=$1/reduce
 
 mkdir -p $REDUCE_DIRECTORY
 
