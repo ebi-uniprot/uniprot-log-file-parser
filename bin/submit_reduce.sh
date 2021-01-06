@@ -1,7 +1,9 @@
 #!/bin/bash
 
+mkdir -p $OUT_DIRECTORY
+mkdir -p $ERROR_DIRECTORY
 
 bsub \
--e ~/error/reduce.e \
--o ~/out/reduce.o \
+-o $OUT_DIRECTORY/reduce.o \
+-e $ERROR_DIRECTORY/reduce.e \
 ./reduce.sh
