@@ -3,7 +3,7 @@ source ../config.sh
 
 mkdir -p $OUT_DIRECTORY
 mkdir -p $ERROR_DIRECTORY
-mkdir -p $JSON_DIRECTORY
+mkdir -p $MAP_DIRECTORY
 
 find $LOG_DIRECTORY -name *.log > $LOG_FILE_LIST
 n=$(wc -l < $LOG_FILE_LIST)

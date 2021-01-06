@@ -1,6 +1,0 @@
-#!/bin/bash
-LOG_FILE_LIST=$1
-RESULTS_DIRECTORY=$2
-FILE=$(head -n $LSB_JOBINDEX $LOG_FILE_LIST | tail -1)
-./map.py $FILE $RESULTS_DIRECTORY
-exit $?
