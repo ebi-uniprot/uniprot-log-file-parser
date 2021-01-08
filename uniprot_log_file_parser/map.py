@@ -60,7 +60,6 @@ def parse_log_file(log_file_path):
 
             # We don't need to count a query multiple times if facets are being used
             if entry.query_has_facets():
-                print(entry.line)
                 continue
 
             namespace = entry.get_namespace()
