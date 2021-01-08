@@ -51,6 +51,7 @@ class LogEntry():
         line = urllib.parse.unquote(urllib.parse.unquote(line))
         m = ENTRY_RE.match(line)
         if not m:
+            print('Could not parse:', line, flush=True, file=sys.stderr)
             return
         self.line = line
         self.date_time = m.group('date_time')
