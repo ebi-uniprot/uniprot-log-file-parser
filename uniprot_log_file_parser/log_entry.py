@@ -29,7 +29,7 @@ ENTRY_RE = re.compile(
     r'(?P<unknown1>.*?) '
     r'(?P<unknown2>.*?) '
     r'\[(?P<date_time>.*?)\] '
-    r'\"(?P<resource>.* ((HTTP\/[0-9\.]+)|null))\" '
+    r'\"(?P<resource>.*((HTTP\/[0-9\.]+)|null))\s*\" '
     r'(?P<response>.*?) '
     r'(?P<bytes>.*?) '
     r'\"(?P<referer>.*?)\" '
