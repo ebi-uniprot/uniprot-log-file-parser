@@ -79,6 +79,9 @@ class LogEntry():
         except ValueError as e:
             print(self.line, e, flush=True, file=sys.stderr)
             return False
+        except AttributeError as e:
+            print(self.line, e, flush=True, file=sys.stderr)
+            return False
 
     def query_has_facets(self):
         """
