@@ -111,7 +111,6 @@ def main():
     if tally_bytes:
         write_counts_to_csv(out_directory, log_file_path, 'bytes', tally_bytes)
     if parsed:
-        print(parsed)
         write_parsed_lines_to_csv(
             out_directory, log_file_path, 'parsed', parsed, FIELDNAMES)
 
