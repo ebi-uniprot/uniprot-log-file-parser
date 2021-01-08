@@ -43,6 +43,9 @@ def parse_log_file(log_file_path):
                 continue
             if entry.is_bot():
                 continue
+            # Some requests were made in 1969-12-31 for some reason
+            if entry.is_request_unreasonably_old():
+                continue
 
             # Daily data traffic
             yyyy_mm_dd = entry.get_yyyy_mm_dd()
