@@ -7,7 +7,7 @@ from collections import defaultdict
 from datetime import datetime
 import sys
 
-from .log_entry import LogEntry
+from .log_entry import LogEntry, LogEntryParseError
 #from .lucene_query import get_field_to_value_counts_from_query
 from .utils import merge_list_defaultdicts, write_counts_to_csv, write_parsed_lines_to_csv
 
@@ -31,14 +31,14 @@ def parse_log_file(log_file_path):
             try:
                 line = f.readline()
             except Exception as e:
-                print(f'[line {line_number}]: {e}',
+                print(f'ReadlineError [line {line_number}]: {e}',
                       flush=True, file=sys.stderr)
             if not line:
                 break
-            entry = LogEntry(line)
-            if not entry:
-                print(
-                    f'Skipping (unable to parse): {line}', flush=True, file=sys.stderr)
+            try:
+                entry = LogEntry(line)
+            except LogEntryParseError as e:
+                print(e, flush=True, file=sys.stderr)
             if not entry.is_success():
                 continue
             if entry.is_bot():
@@ -76,14 +76,8 @@ def parse_log_file(log_file_path):
                 if query:
                     to_write['query'] = query
                     lines_to_write.append(to_write)
-                    # _field_to_values = get_field_to_value_counts_from_query(
-                    #     query)
-                    # # print(query, _field_to_values)
-                    # field_to_values = merge_list_defaultdicts(
-                    #     field_to_values, _field_to_values)
             except Exception as e:
-                print(f'Exception {e} occured: {line}',
-                      flush=True, file=sys.stderr)
+                print(e, flush=True, file=sys.stderr)
 
     return tally_n_requests, tally_bytes, lines_to_write
 

@@ -29,7 +29,7 @@ ENTRY_RE = re.compile(
     r'(?P<unknown1>.*?) '
     r'(?P<unknown2>.*?) '
     r'\[(?P<date_time>.*?)\] '
-    r'\"(?P<resource>.*((HTTP\/[0-9\.]+)|null))\s*\" '
+    r'\"(?P<resource>.*((HTTP\/[0-9\.]+)|null)?)\s*\" '
     r'(?P<response>.*?) '
     r'(?P<bytes>.*?) '
     r'\"(?P<referer>.*?)\" '
@@ -46,13 +46,20 @@ PARAMS_RE = re.compile(r'GET\s(?P<params>.*)\sHTTP/.*',
                        re.IGNORECASE | re.DOTALL)
 
 
+class LogEntryParseError(Exception):
+    pass
+
+
+class LogEntryQueryError(Exception):
+    pass
+
+
 class LogEntry():
     def __init__(self, line):
         line = urllib.parse.unquote(urllib.parse.unquote(line))
         m = ENTRY_RE.match(line)
         if not m:
-            print('Could not parse:', line, flush=True, file=sys.stderr)
-            return
+            raise LogEntryParseError(line)
         self.line = line
         self.date_time = m.group('date_time')
         self.user_agent = m.group('user_agent')
@@ -116,5 +123,6 @@ class LogEntry():
         parsed_params = urllib.parse.parse_qs(params.query)
         if 'query' in parsed_params:
             query = parsed_params['query']
-            assert len(query) == 1
+            if len(query) != 1:
+                raise LogEntryQueryError(self.line)
             return clean(query[0])
