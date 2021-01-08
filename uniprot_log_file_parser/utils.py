@@ -26,7 +26,7 @@ def write_counts_to_csv(out_directory, log_file_path, suffix, count_dict):
 def write_parsed_lines_to_csv(out_directory, log_file_path, suffix, parsed_lines, fieldnames):
     csv_out_filename = get_csv_out_filename(log_file_path, suffix)
     csv_file_path = os.path.join(out_directory, csv_out_filename)
-    with open(csv_file_path, 'w') as f:
+    with open(csv_file_path, 'w', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         for d in parsed_lines:
             writer.writerow(d)

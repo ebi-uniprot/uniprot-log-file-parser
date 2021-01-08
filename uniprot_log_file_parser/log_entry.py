@@ -3,6 +3,7 @@ import re
 import urllib.parse
 from pathlib import PurePosixPath
 from datetime import datetime
+import pytz
 from user_agents import parse as user_agents_parser
 import sys
 
@@ -44,6 +45,8 @@ ENTRY_RE = re.compile(
 
 PARAMS_RE = re.compile(r'GET\s(?P<params>.*)\sHTTP/.*',
                        re.IGNORECASE | re.DOTALL)
+
+TOO_OLD = datetime(2002, 1, 1, 0, 0, 0, 0, pytz.UTC)
 
 
 class LogEntryParseError(Exception):
@@ -95,6 +98,10 @@ class LogEntry():
         &fil is used when the facets are activated. Eg https://www.uniprot.org/uniprot/?query=a4&fil=reviewed%3Ayes&sort=score means that the user has clicked on the reviewed facet after searching for a4
         """
         return '&fil=' in self.resource
+
+    def is_request_unreasonably_old(self):
+        date_time = datetime.strptime(self.date_time, '%d/%b/%Y:%H:%M:%S %z')
+        return date_time < TOO_OLD
 
     def get_yyyy_mm_dd(self):
         date_time = datetime.strptime(self.date_time, '%d/%b/%Y:%H:%M:%S %z')
