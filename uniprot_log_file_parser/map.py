@@ -12,9 +12,8 @@ from .log_entry import LogEntry
 from .utils import merge_list_defaultdicts, write_counts_to_csv, write_parsed_lines_to_csv
 
 FIELDNAMES = [
-    'domain',
-    'user-type',
-    'user-agent-family',
+    'namespace',
+    'user-agent-browser-family',
     'query'
 ]
 
@@ -22,8 +21,7 @@ FIELDNAMES = [
 def parse_log_file(log_file_path):
     tally_n_requests = defaultdict(int)
     tally_bytes = defaultdict(int)
-    tally_user_type = defaultdict(int)
-    field_to_values = defaultdict(list)
+    # field_to_values = defaultdict(list)
     lines_to_write = []
     with open(log_file_path, 'r', encoding='unicode_escape') as f:
         line_number = 0
@@ -44,34 +42,35 @@ def parse_log_file(log_file_path):
             if not entry.is_success():
                 continue
             if entry.is_bot():
-                tally_user_type['bot'] += 1
                 continue
 
             # Daily data traffic
             yyyy_mm_dd = entry.get_yyyy_mm_dd()
             tally_n_requests[yyyy_mm_dd] += 1
 
-            if not entry.is_get():
-                continue
-
             b = entry.get_bytes()
             if b:
                 tally_bytes[yyyy_mm_dd] += b
 
-            if entry.is_unknown_agent():
-                tally_user_type['unknown'] += 1
+            if not entry.is_get():
                 continue
 
-            tally_user_type['browser'] += 1
+            if entry.is_unknown_agent():
+                continue
 
-            domain = entry.get_domain()
+            # We don't need to count a query multiple times if facets are being used
+            if entry.query_has_facets():
+                print(entry.line)
+                continue
+
+            namespace = entry.get_namespace()
             # We are only interested in queries made to a specific domain (eg uniprotkb)
             # and not requests to resources such as /scripts, /style
-            if not domain:
+            if not namespace:
                 continue
-            to_write['domain'] = domain
-            to_write['user-type'] = entry.get_user_type()
-            to_write['user-agent-family'] = entry.get_user_agent_family()
+
+            to_write['namespace'] = namespace
+            to_write['user-agent-browser-family'] = entry.get_user_agent_browser_family()
 
             try:
                 query = entry.get_query()
@@ -87,7 +86,7 @@ def parse_log_file(log_file_path):
                 print(f'Exception {e} occured: {line}',
                       flush=True, file=sys.stderr)
 
-    return tally_n_requests, tally_bytes, tally_user_type, lines_to_write, field_to_values
+    return tally_n_requests, tally_bytes, lines_to_write
 
 
 def get_arguments():
@@ -104,19 +103,17 @@ def main():
     log_file_path, out_directory = get_arguments()
     print(
         f'Parsing: {log_file_path} and saving output to directory: {out_directory}')
-    tally_n_requests, tally_bytes, tally_user_type, lines_to_write, _ = parse_log_file(
+    tally_n_requests, tally_bytes, parsed = parse_log_file(
         log_file_path)
     if tally_n_requests:
         write_counts_to_csv(out_directory, log_file_path,
                             'n-requests', tally_n_requests)
     if tally_bytes:
         write_counts_to_csv(out_directory, log_file_path, 'bytes', tally_bytes)
-    if tally_user_type:
-        write_counts_to_csv(out_directory, log_file_path,
-                            'user-type', tally_user_type)
-    if lines_to_write:
+    if parsed:
+        print(parsed)
         write_parsed_lines_to_csv(
-            out_directory, log_file_path, 'parsed', lines_to_write, FIELDNAMES)
+            out_directory, log_file_path, 'parsed', parsed, FIELDNAMES)
 
 
 if __name__ == '__main__':

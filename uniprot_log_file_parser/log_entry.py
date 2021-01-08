@@ -3,13 +3,13 @@ import re
 import urllib.parse
 from pathlib import PurePosixPath
 from datetime import datetime
-from ua_parser import user_agent_parser
+from user_agents import parse as user_agents_parser
 import sys
 
 from .patterns import BOT_RE, PROGRAMMATIC_RE, UNKNOWN_RE
 from .utils import clean
 
-DOMAINS = [
+NAMESPACES = [
     'uniprot',
     'uniref',
     'uniparc',
@@ -21,7 +21,6 @@ DOMAINS = [
     'database',
     'diseases',
     'keywords',
-    'mapping'
 ]
 
 
@@ -53,41 +52,25 @@ class LogEntry():
         m = ENTRY_RE.match(line)
         if not m:
             return
-
         self.line = line
         self.date_time = m.group('date_time')
         self.user_agent = m.group('user_agent')
         self.response = m.group('response')
         self.resource = m.group('resource')
         self.bytes = m.group('bytes')
+        self.user_agent = user_agents_parser(self.user_agent)
 
     def is_bot(self):
-        return BOT_RE.search(self.user_agent)
+        return self.user_agent.is_bot
 
     def is_get(self):
         return self.resource.lower().startswith('get')
 
     def is_unknown_agent(self):
-        return UNKNOWN_RE.search(self.user_agent)
+        return self.get_user_agent_browser_family() == 'Other'
 
-    def is_programmatic(self):
-        return PROGRAMMATIC_RE.search(self.user_agent)
-
-    def get_user_type(self):
-        if self.is_bot():
-            return 'bot'
-        if self.is_unknown_agent():
-            return 'unknown'
-        if self.is_programmatic():
-            return 'programmatic'
-        return 'browser'
-
-    def get_user_agent(self):
-        return self.user_agent
-
-    def get_user_agent_family(self):
-        ua = user_agent_parser.Parse(self.user_agent)
-        return ua['user_agent']['family']
+    def get_user_agent_browser_family(self):
+        return self.user_agent.browser.family
 
     def is_success(self):
         try:
@@ -96,7 +79,7 @@ class LogEntry():
             print(self.line, e, flush=True, file=sys.stderr)
             return False
 
-    def query_contains_fil(self):
+    def query_has_facets(self):
         """
         &fil is used when the facets are activated. Eg https://www.uniprot.org/uniprot/?query=a4&fil=reviewed%3Ayes&sort=score means that the user has clicked on the reviewed facet after searching for a4
         """
@@ -114,12 +97,12 @@ class LogEntry():
         except ValueError as e:
             print(self.line, e, flush=True, file=sys.stderr)
 
-    def get_domain(self):
+    def get_namespace(self):
         paths = PurePosixPath(self.resource).parts
         if len(paths) > 1:
-            domain = paths[1].lower()
-            if domain in DOMAINS:
-                return domain
+            namespace = paths[1].lower()
+            if namespace in NAMESPACES:
+                return namespace
 
     def get_query(self):
         m = PARAMS_RE.match(self.resource)
