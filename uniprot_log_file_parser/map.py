@@ -7,7 +7,7 @@ from collections import defaultdict
 from datetime import datetime
 import sys
 
-from .log_entry import LogEntry, LogEntryParseError
+from .log_entry import LogEntry
 #from .lucene_query import get_field_to_value_counts_from_query
 from .utils import merge_list_defaultdicts, write_counts_to_csv, write_parsed_lines_to_csv
 
@@ -37,7 +37,7 @@ def parse_log_file(log_file_path):
                 break
             try:
                 entry = LogEntry(line)
-            except LogEntryParseError as e:
+            except Exception as e:
                 print(e, flush=True, file=sys.stderr)
             if not entry.is_success():
                 continue
