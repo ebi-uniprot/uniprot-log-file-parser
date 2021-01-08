@@ -8,7 +8,7 @@ from datetime import datetime
 import sys
 
 from .log_entry import LogEntry
-from .lucene_query import get_field_to_value_counts_from_query
+#from .lucene_query import get_field_to_value_counts_from_query
 from .utils import merge_list_defaultdicts, write_counts_to_csv, write_parsed_lines_to_csv
 
 FIELDNAMES = [
