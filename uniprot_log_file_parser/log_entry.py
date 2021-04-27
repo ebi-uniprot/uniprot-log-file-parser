@@ -11,17 +11,21 @@ from .patterns import BOT_RE, PROGRAMMATIC_RE, UNKNOWN_RE
 from .utils import clean
 
 NAMESPACES = [
-    'uniprot',
-    'uniref',
-    'uniparc',
-    'taxonomy',
-    'proteomes',
+    'align',
+    'blast',
     'citations',
-    'taxonomy',
-    'locations',
     'database',
     'diseases',
     'keywords',
+    'locations',
+    'peptidesearch',
+    'proteomes',
+    'sparql',
+    'taxonomy',
+    'uniparc',
+    'uniprot',
+    'uniref',
+    'uploadlists',
 ]
 
 
@@ -48,6 +52,35 @@ PARAMS_RE = re.compile(r'GET\s(?P<params>.*)\sHTTP/.*',
 
 TOO_OLD = datetime(2002, 1, 1, 0, 0, 0, 0, pytz.UTC)
 
+PROGRAMMATIC_APPS = {
+    'Python Requests',
+    'Wget',
+    'Apache-HttpClient',
+    'libwww-perl',
+    'curl',
+    'Java'
+}
+
+BROWSER_APPS = {
+    'Chrome',
+    'IE',
+    'Firefox',
+    'Opera',
+    'Safari',
+    'QQ Browser',
+    'Edge',
+    'Netscape',
+    'Mobile Safari',
+    'Sogou Explorer',
+    'Chrome Mobile',
+    'UC Browser',
+    'Chromium',
+    'Samsung Internet',
+    'Chrome Mobile iOS',
+}
+
+NON_BOT_APPS = PROGRAMMATIC_APPS | BROWSER_APPS
+
 
 class LogEntryParseError(Exception):
     pass
@@ -72,7 +105,7 @@ class LogEntry():
         self.user_agent = user_agents_parser(self.user_agent)
 
     def is_bot(self):
-        return self.user_agent.is_bot
+        return self.user_agent.is_bot and self.get_user_agent_browser_family() not in NON_BOT_APPS
 
     def is_get(self):
         return self.resource.lower().startswith('get')
