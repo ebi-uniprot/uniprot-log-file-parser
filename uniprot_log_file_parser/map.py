@@ -23,7 +23,7 @@ def parse_log_file(log_file_path):
     tally_bytes = defaultdict(int)
     # field_to_values = defaultdict(list)
     lines_to_write = []
-    with open(log_file_path, 'r', encoding='unicode_escape') as f:
+    with open(log_file_path, 'r', encoding='ISO-8859-1') as f:
         line_number = 0
         while True:
             to_write = {}
