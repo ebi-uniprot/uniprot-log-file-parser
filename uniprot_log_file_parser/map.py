@@ -12,9 +12,11 @@ from .log_entry import LogEntry
 from .utils import merge_list_defaultdicts, write_counts_to_csv, write_parsed_lines_to_csv
 
 FIELDNAMES = [
+    'date',
     'namespace',
     'user-agent-browser-family',
-    'query'
+    'resource',
+    'resource-type'
 ]
 
 
@@ -70,14 +72,15 @@ def parse_log_file(log_file_path):
             # and not requests to resources such as /scripts, /style
             if not namespace:
                 continue
-
+            to_write['date'] = yyyy_mm_dd
             to_write['namespace'] = namespace
             to_write['user-agent-browser-family'] = entry.get_user_agent_browser_family()
 
             try:
-                query = entry.get_query()
-                if query:
-                    to_write['query'] = query
+                resource, resource_type = entry.get_resource()
+                if resource:
+                    to_write['resource'] = resource
+                    to_write['resource-type'] = resource_type or ''
                     lines_to_write.append(to_write)
             except Exception as e:
                 print(e, flush=True, file=sys.stderr)

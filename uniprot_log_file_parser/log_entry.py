@@ -47,8 +47,11 @@ ENTRY_RE = re.compile(
     re.DOTALL
 )
 
-PARAMS_RE = re.compile(r'GET\s(?P<params>.*)\sHTTP/.*',
-                       re.IGNORECASE | re.DOTALL)
+RESOURCE_RE = re.compile(r'GET\s(?P<resource>.*)\sHTTP/.*',
+                         re.IGNORECASE | re.DOTALL)
+
+UNIPROTKB_ENTRY_RE = re.compile(
+    r'^/uniprot/(?P<accession>([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z]([0-9][A-Z][A-Z0-9]{2}){1,2}[0-9])(-[0-9]+)?)', re.IGNORECASE | re.DOTALL)
 
 TOO_OLD = datetime(2002, 1, 1, 0, 0, 0, 0, pytz.UTC)
 
@@ -155,14 +158,18 @@ class LogEntry():
             if namespace in NAMESPACES:
                 return namespace
 
-    def get_query(self):
-        m = PARAMS_RE.match(self.resource)
+    def get_resource(self):
+        m = RESOURCE_RE.match(self.resource)
         assert m, f'Cannot get parameters from {self.resource}'
-        params = m.group('params')
-        params = urllib.parse.urlparse(params)
+        resource = m.group('resource')
+        params = urllib.parse.urlparse(resource)
         parsed_params = urllib.parse.parse_qs(params.query)
         if 'query' in parsed_params:
             query = parsed_params['query']
             if len(query) != 1:
                 raise LogEntryQueryError(self.line)
-            return clean(query[0])
+            return (clean(query[0]), 'query')
+        m = UNIPROTKB_ENTRY_RE.match(resource)
+        if m and m.group('accession'):
+            return (m.group('accession'), 'entry')
+        return (resource, None)
