@@ -199,4 +199,5 @@ class LogEntry():
         return (resource, None, None)
 
     def get_referer(self):
-        return self.referer
+        r = urllib.parse.urlparse(self.referer)
+        return r.netloc
