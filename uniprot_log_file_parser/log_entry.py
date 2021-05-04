@@ -50,8 +50,28 @@ ENTRY_RE = re.compile(
 RESOURCE_RE = re.compile(r'GET\s(?P<resource>.*)\sHTTP/.*',
                          re.IGNORECASE | re.DOTALL)
 
-UNIPROTKB_ENTRY_RE = re.compile(
-    r'^/uniprot/(?P<accession>([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z]([0-9][A-Z][A-Z0-9]{2}){1,2}[0-9])(-[0-9]+)?)', re.IGNORECASE | re.DOTALL)
+# UNIPROTKB_ENTRY_RE = re.compile(
+#     r'^/uniprot/(?P<accession>([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z]([0-9][A-Z][A-Z0-9]{2}){1,2}[0-9])(-[0-9]+)?)', re.IGNORECASE | re.DOTALL)
+
+
+ENTRY_NAMESPACES = [
+    'citations',
+    'database',
+    'diseases',
+    'keywords',
+    'locations',
+    'proteomes',
+    'taxonomy',
+    'uniparc',
+    'uniprot',
+    'uniref',
+]
+
+ENTRY_RESOURCE_RE = re.compile(r'^/(' + '|'.join(ENTRY_NAMESPACES) +
+                               r')/(?P<id>[^./]+)(?P<ext>\.[^/]*)')
+
+ENTRY_SUB_RESOURCE_RE = re.compile(r'^/(' + '|'.join(ENTRY_NAMESPACES) +
+                                   r')/(?P<id>[^./]+)/(?P<subpage>.*)')
 
 TOO_OLD = datetime(2002, 1, 1, 0, 0, 0, 0, pytz.UTC)
 
@@ -105,6 +125,7 @@ class LogEntry():
         self.response = m.group('response')
         self.resource = m.group('resource')
         self.bytes = m.group('bytes')
+        self.referer = m.group('referer')
         self.user_agent = user_agents_parser(self.user_agent)
 
     def is_bot(self):
@@ -168,8 +189,14 @@ class LogEntry():
             query = parsed_params['query']
             if len(query) != 1:
                 raise LogEntryQueryError(self.line)
-            return (clean(query[0]), 'query')
-        m = UNIPROTKB_ENTRY_RE.match(resource)
-        if m and m.group('accession'):
-            return (m.group('accession'), 'entry')
-        return (resource, None)
+            return (clean(query[0]), 'query', None)
+        m = ENTRY_SUB_RESOURCE_RE.match(resource)
+        if m and m.group('id') and m.group('subpage'):
+            return (m.group('id'), 'entry-subpage', m.group('subpage'))
+        m = ENTRY_RESOURCE_RE.match(resource)
+        if m and m.group('id'):
+            return (m.group('id'), 'entry', None)
+        return (resource, None, None)
+
+    def get_referer(self):
+        return self.referer

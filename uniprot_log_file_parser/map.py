@@ -16,7 +16,9 @@ FIELDNAMES = [
     'namespace',
     'user-agent-browser-family',
     'resource',
-    'resource-type'
+    'resource-type',
+    'resource-subpage',
+    'referer'
 ]
 
 
@@ -35,12 +37,14 @@ def parse_log_file(log_file_path):
             except Exception as e:
                 print(f'ReadlineError [line {line_number}]: {e}',
                       flush=True, file=sys.stderr)
+                continue
             if not line:
                 break
             try:
                 entry = LogEntry(line)
             except Exception as e:
                 print(e, flush=True, file=sys.stderr)
+                continue
             if not entry.is_success():
                 continue
             if entry.is_bot():
@@ -77,13 +81,16 @@ def parse_log_file(log_file_path):
             to_write['user-agent-browser-family'] = entry.get_user_agent_browser_family()
 
             try:
-                resource, resource_type = entry.get_resource()
+                resource, resource_type, resource_subpage = entry.get_resource()
                 if resource:
                     to_write['resource'] = resource
                     to_write['resource-type'] = resource_type or ''
-                    lines_to_write.append(to_write)
+                    to_write['resource-subpage'] = resource_subpage or ''
             except Exception as e:
                 print(e, flush=True, file=sys.stderr)
+
+            to_write['referer'] = entry.get_referer()
+            lines_to_write.append(to_write)
 
     return tally_n_requests, tally_bytes, lines_to_write
 
