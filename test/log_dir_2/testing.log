@@ -1,0 +1,101 @@
+- - - [19/Jan/2020:00:00:02 +0000] "HEAD /uniprot/P12345 HTTP/1.1" 200 - "-" "curl/7.29.0" 0.030 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:00:04 +0000] "GET /jobs/X-B202001185C475328CEF75220C360D524E9D456CE006A06V.job HTTP/1.1" 404 16049 "-" "www.uniprot.org,www.uniprot.org" 0.030 - text/html;charset=ISO-8859-1 123.123.123.123 -
+- - - [19/Jan/2020:00:00:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.176 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:00:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.166 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:00:09 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.165 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:00:11 +0000] "GET /jobs/Y-B202001186746803381A1F0E0DB47453E0216320D0B1D44L-HOST-C3F4233CD1B95AA943252B3DF0C234CD.get HTTP/1.1" 200 - "-" "www.uniprot.org,www.uniprot.org" 1.509 - text/html;charset=ISO-8859-1 123.123.123.123 1
+123.123.123.123 - - [19/Jan/2020:00:00:18 +0000] "GET /jobs/X-B20200119216DA2B77BFBD2E6699CA9B6D1C41EB21312523.job HTTP/1.1" 404 16049 "-" "www.uniprot.org,www.uniprot.org" 0.003 - text/html;charset=ISO-8859-1 123.123.123.123 -
+- - - [19/Jan/2020:00:00:22 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.175 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:00:32 +0000] "GET /jobs/X-B20200118E5A08BB0B2D1C45B0C7BC3B55FD265561324E1J.job HTTP/1.1" 404 16049 "-" "www.uniprot.org,www.uniprot.org" 0.004 - text/html;charset=ISO-8859-1 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:00:37 +0000] "GET /status HTTP/1.1" 200 18814 "-" "Pingdom.com_bot_version_1.4_(http://www.pingdom.com/)" 0.047 - text/html;charset=UTF-8 123.123.123.123 -
+- - - [19/Jan/2020:00:00:38 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.173 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:00:38 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.172 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:00:39 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.174 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:00:41 +0000] "GET /jobs/X-B20200119216DA2B77BFBD2E6699CA9B6D1C41EB21312523.job HTTP/1.1" 404 16049 "-" "www.uniprot.org,www.uniprot.org" 0.003 - text/html;charset=ISO-8859-1 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:00:50 +0000] "GET /jobs/Y-B202001188471C63D39733769F8E060B506551E12131E914-HOST-5C475328CEF75220C360D524E9D456CE.get HTTP/1.1" 200 - "-" "www.uniprot.org,www.uniprot.org" 0.224 - text/html;charset=ISO-8859-1 123.123.123.123 1
+123.123.123.123 - - [19/Jan/2020:00:00:50 +0000] "GET /jobs/X-B20200119216DA2B77BFBD2E6699CA9B6D1C41EB21312523.job HTTP/1.1" 404 16049 "-" "www.uniprot.org,www.uniprot.org" 0.003 - text/html;charset=ISO-8859-1 123.123.123.123 -
+- - - [19/Jan/2020:00:00:52 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.164 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:00:53 +0000] "GET /jobs/Y-B20200118E5A08BB0B2D1C45B0C7BC3B55FD265561324E1J-HOST-E5A08BB0B2D1C45B0C7BC3B55FD26556.get HTTP/1.1" 200 - "-" "www.uniprot.org,www.uniprot.org" 0.442 - text/html;charset=ISO-8859-1 123.123.123.123 1
+123.123.123.123 - - [19/Jan/2020:00:00:55 +0000] "GET /jobs/Y-B202001185C475328CEF75220C360D524E9D456CE006A06V-HOST-8471C63D39733769F8E060B506551E12.get HTTP/1.1" 200 - "-" "www.uniprot.org,www.uniprot.org" 0.660 - text/html;charset=ISO-8859-1 123.123.123.123 1
+123.123.123.123 - - [19/Jan/2020:00:01:06 +0000] "GET /jobs/Y-B20200118E5A08BB0B2D1C45B0C7BC3B55FD265561324E1J-HOST-8471C63D39733769F8E060B506551E12.get HTTP/1.1" 200 - "-" "www.uniprot.org,www.uniprot.org" 0.002 - text/html;charset=ISO-8859-1 123.123.123.123 1
+- - - [19/Jan/2020:00:01:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.173 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:01:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.167 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:01:09 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.167 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:01:22 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.275 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:01:37 +0000] "GET /status HTTP/1.1" 200 18814 "-" "Pingdom.com_bot_version_1.4_(http://www.pingdom.com/)" 0.040 - text/html;charset=UTF-8 123.123.123.123 -
+- - - [19/Jan/2020:00:01:38 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.172 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:01:38 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.162 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:01:39 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.161 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:01:48 +0000] "HEAD / HTTP/1.1" 200 - "-" "www.uniprot.org" 0.004 - text/html;charset=UTF-8 123.123.123.123 -
+- - - [19/Jan/2020:00:01:52 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.192 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:02:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.179 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:02:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.212 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:02:09 +0000] "HEAD /uniprot/fos_human.txt HTTP/1.0" 302 - "-" "check_http/v2.2.1.git (nagios-plugins 2.2.1)" 0.001 - text/html;charset=ISO-8859-1 - -
+- - - [19/Jan/2020:00:02:09 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.167 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:02:22 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.169 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:02:37 +0000] "GET /status HTTP/1.1" 200 18813 "-" "Pingdom.com_bot_version_1.4_(http://www.pingdom.com/)" 0.018 - text/html;charset=UTF-8 123.123.123.123 -
+- - - [19/Jan/2020:00:02:38 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.164 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:02:38 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.164 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:02:39 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.185 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:02:52 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.167 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:02:53 +0000] "GET /jobs/Y-B20200119216DA2B77BFBD2E6699CA9B6D1C41EB21312523-HOST-8471C63D39733769F8E060B506551E12.get HTTP/1.1" 200 - "-" "www.uniprot.org,www.uniprot.org" 0.843 - text/html;charset=ISO-8859-1 123.123.123.123 1
+123.123.123.123 - - [19/Jan/2020:00:03:04 +0000] "GET /jobs/X-B20200119E5A08BB0B2D1C45B0C7BC3B55FD265561324E9X.job HTTP/1.1" 404 16049 "-" "www.uniprot.org,www.uniprot.org" 0.004 - text/html;charset=ISO-8859-1 123.123.123.123 -
+- - - [19/Jan/2020:00:03:05 +0000] "HEAD /uniprot/fos_human.txt HTTP/1.0" 302 - "-" "check_http/v2.2.1.git (nagios-plugins 2.2.1)" 0.001 - text/html;charset=ISO-8859-1 - -
+- - - [19/Jan/2020:00:03:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.169 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:03:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.183 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:03:09 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.177 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:03:15 +0000] "HEAD /uniprot/P15498 HTTP/1.0" 200 - "-" "check_http/v2.2.1.git (nagios-plugins 2.2.1)" 0.028 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:03:22 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.169 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:03:37 +0000] "GET /status HTTP/1.1" 200 18814 "-" "Pingdom.com_bot_version_1.4_(http://www.pingdom.com/)" 0.040 - text/html;charset=UTF-8 123.123.123.123 -
+- - - [19/Jan/2020:00:03:38 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.174 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:03:38 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.176 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:03:39 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.167 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:03:52 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.164 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:03:59 +0000] "GET /jobs/X-B202001195C475328CEF75220C360D524E9D456CE006A0DP.job HTTP/1.1" 404 16049 "-" "www.uniprot.org,www.uniprot.org" 0.003 - text/html;charset=ISO-8859-1 123.123.123.123 -
+- - - [19/Jan/2020:00:04:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.195 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:04:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.163 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:04:09 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.168 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:04:23 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.181 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:04:32 +0000] "GET /jobs/X-B202001195C475328CEF75220C360D524E9D456CE006A0DP.job HTTP/1.1" 404 16049 "-" "www.uniprot.org,www.uniprot.org" 0.003 - text/html;charset=ISO-8859-1 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:37 +0000] "GET /status HTTP/1.1" 200 18814 "-" "Pingdom.com_bot_version_1.4_(http://www.pingdom.com/)" 0.049 - text/html;charset=UTF-8 123.123.123.123 -
+- - - [19/Jan/2020:00:04:38 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.170 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:04:38 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.164 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:04:39 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.180 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:04:40 +0000] "GET /jobs/X-B20200119E5A08BB0B2D1C45B0C7BC3B55FD265561324ED5.job HTTP/1.1" 404 16049 "-" "www.uniprot.org,www.uniprot.org" 0.002 - text/html;charset=ISO-8859-1 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:43 +0000] "GET /jobs/Y-B202001195C475328CEF75220C360D524E9D456CE006A0DP-HOST-5C475328CEF75220C360D524E9D456CE.get HTTP/1.1" 200 - "-" "www.uniprot.org,www.uniprot.org" 0.583 - text/html;charset=ISO-8859-1 123.123.123.123 1
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /taxonomy/ HTTP/1.1" 200 34546 "-" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.184 - text/html;charset=UTF-8 123.123.123.123 2512168
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /uniprot.min.css2019_11 HTTP/1.1" 200 31588 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - text/css 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /js-compr.js2019_11 HTTP/1.1" 200 1476 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - text/javascript 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /scripts/frontier/d3/d3.v3.min.js HTTP/1.1" 200 51433 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.000 - text/javascript 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /scripts/tippy.all.min.js HTTP/1.1" 200 15010 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - text/javascript 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /images/logos/Logo_medium.png HTTP/1.1" 200 2848 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.000 - image/png 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /images/logos/uniprot-rgb-optimized.svg HTTP/1.1" 200 996 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - image/svg+xml 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /images/elixir-cdr.gif HTTP/1.1" 200 2283 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.000 - image/gif 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /images/seri-logo.png HTTP/1.1" 200 49796 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.000 - image/png 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /images/embl-logo.png HTTP/1.1" 200 179015 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.003 - image/png 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /images/UniProt_Headerimage.png HTTP/1.1" 200 172066 "https://ebi13.uniprot.org/uniprot.min.css2019_11" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.002 - image/png 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /style/fonts/ebi-functional/fonts/EBI-Functional.woff HTTP/1.1" 200 12266 "https://ebi13.uniprot.org/uniprot.min.css2019_11" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.000 - application/font-woff 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /images/sprite_search.png HTTP/1.1" 200 2714 "https://ebi13.uniprot.org/uniprot.min.css2019_11" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - image/png 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /style/fonts/uniprot/fonts/uniprot.woff HTTP/1.1" 200 2826 "https://ebi13.uniprot.org/uniprot.min.css2019_11" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - application/font-woff 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /style/fonts/ebi-generic/fonts/EBI-Generic.woff HTTP/1.1" 200 39981 "https://ebi13.uniprot.org/uniprot.min.css2019_11" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - application/font-woff 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /images/UniProt_Footerimage.png HTTP/1.1" 200 58711 "https://ebi13.uniprot.org/uniprot.min.css2019_11" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - image/png 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /images/logos/footer/sprites.png HTTP/1.1" 200 23284 "https://ebi13.uniprot.org/uniprot.min.css2019_11" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.000 - image/png 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:46 +0000] "GET /images/sprite_icons.png HTTP/1.1" 200 5631 "https://ebi13.uniprot.org/uniprot.min.css2019_11" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - image/png 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:47 +0000] "GET /scripts/supporting_results-bundle.js HTTP/1.1" 200 1117 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - text/javascript 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:47 +0000] "GET /scripts/common-bundle.js HTTP/1.1" 200 42959 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - text/javascript 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:47 +0000] "GET /favicon.ico HTTP/1.1" 200 3638 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.000 - - 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:47 +0000] "GET /taxonomy/?query=human&sort=score HTTP/1.1" 200 39345 "https://ebi13.uniprot.org/taxonomy/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.259 - text/html;charset=UTF-8 123.123.123.123 8442
+123.123.123.123 - - [19/Jan/2020:00:04:47 +0000] "GET /uniprot.min.css2019_11 HTTP/1.1" 200 31588 "https://ebi13.uniprot.org/taxonomy/?query=human&sort=score" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.000 - text/css 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:47 +0000] "GET /scripts/supporting_results-bundle.js HTTP/1.1" 200 1117 "https://ebi13.uniprot.org/taxonomy/?query=human&sort=score" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - text/javascript 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:47 +0000] "GET /taxonomy/?query=human&fil=ancestor%3A%22Eukaryota+%5B2759%5D%22&sort=score HTTP/1.1" 200 37813 "https://ebi13.uniprot.org/taxonomy/?query=human&sort=score" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.080 - text/html;charset=UTF-8 123.123.123.123 19
+123.123.123.123 - - [19/Jan/2020:00:04:47 +0000] "GET /uniprot.min.css2019_11 HTTP/1.1" 200 31588 "https://ebi13.uniprot.org/taxonomy/?query=human&fil=ancestor%3A%22Eukaryota+%5B2759%5D%22&sort=score" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.001 - text/css 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:48 +0000] "GET /scripts/supporting_results-bundle.js HTTP/1.1" 200 1117 "https://ebi13.uniprot.org/taxonomy/?query=human&fil=ancestor%3A%22Eukaryota+%5B2759%5D%22&sort=score" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.000 - text/javascript 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:48 +0000] "GET /scripts/common-bundle.js HTTP/1.1" 200 42959 "https://ebi13.uniprot.org/taxonomy/?query=human&fil=ancestor%3A%22Eukaryota+%5B2759%5D%22&sort=score" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.000 - text/javascript 123.123.123.123 -
+- - - [19/Jan/2020:00:04:52 +0000] "HEAD /uniprot/P15498 HTTP/1.0" 200 - "-" "check_http/v2.2.1.git (nagios-plugins 2.2.1)" 0.027 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:04:53 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.163 - text/html;charset=UTF-8 - 1
+123.123.123.123 - - [19/Jan/2020:00:04:56 +0000] "GET /jobs/Y-B202001195C475328CEF75220C360D524E9D456CE006A0DP-HOST-E5A08BB0B2D1C45B0C7BC3B55FD26556.get HTTP/1.1" 200 - "-" "www.uniprot.org,www.uniprot.org" 0.003 - text/html;charset=ISO-8859-1 123.123.123.123 1
+123.123.123.123 - - [19/Jan/2020:00:04:58 +0000] "GET /jobs/X-B202001198471C63D39733769F8E060B506551E12131EA0B.job HTTP/1.1" 404 16049 "-" "www.uniprot.org,www.uniprot.org" 0.003 - text/html;charset=ISO-8859-1 123.123.123.123 -
+123.123.123.123 - - [19/Jan/2020:00:04:59 +0000] "GET /jobs/X-B202001198471C63D39733769F8E060B506551E12131E9D9.job HTTP/1.1" 404 16049 "-" "www.uniprot.org,www.uniprot.org" 0.002 - text/html;charset=ISO-8859-1 123.123.123.123 -
+- - - [19/Jan/2020:00:05:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.183 - text/html;charset=UTF-8 - 1
+- - - [19/Jan/2020:00:05:08 +0000] "GET /uniprot/P05067 HTTP/1.0" 200 16384 "-" "HTTP-Monitor/1.1" 0.173 - text/html;charset=UTF-8 - 1
+52.210.232.124 - - [10/Jul/2020:00:05:21 +0000] "GET /uniparc/?query=database%3Atrembl-new&sort=score HTTP/1.1" 200 24258 "https://ebi13.uniprot.org/uniparc/" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko)" 0.004 - text/html;charset=UTF-8 52.210.232.124 0
