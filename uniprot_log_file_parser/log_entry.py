@@ -154,6 +154,9 @@ class LogEntry():
     def get_user_agent_browser_family(self):
         return self.user_agent.browser.family
 
+    def is_opensearch(self):
+        return 'opensearch.xml' in self.resource
+
     def is_success(self):
         try:
             return int(self.response) == 200

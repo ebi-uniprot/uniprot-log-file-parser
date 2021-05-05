@@ -72,6 +72,9 @@ def parse_log_file(log_file_path):
             if entry.query_has_facets():
                 continue
 
+            if entry.is_opensearch():
+                continue
+
             # We are only interested in queries made to a specific domain (eg uniprotkb)
             # and not requests to resources such as /scripts, /style
             if not entry.has_valid_namespace():
