@@ -13,7 +13,6 @@ from .utils import merge_list_defaultdicts, write_counts_to_csv, write_parsed_li
 
 FIELDNAMES = [
     'date',
-    'namespace',
     'user-agent-browser-family',
     'namespace',
     'resource_type',
