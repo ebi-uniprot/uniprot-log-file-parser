@@ -15,10 +15,12 @@ FIELDNAMES = [
     'date',
     'namespace',
     'user-agent-browser-family',
-    'resource',
-    'resource-type',
-    'resource-subpage',
-    'referer'
+    'namespace',
+    'resource_type',
+    'datum',
+    'referer',
+    'referer_resource_type',
+    'referer_datum',
 ]
 
 
@@ -64,32 +66,42 @@ def parse_log_file(log_file_path):
             if not entry.is_get():
                 continue
 
-            if entry.is_unknown_agent():
-                continue
+            # if entry.is_unknown_agent():
+            #     continue
 
             # We don't need to count a query multiple times if facets are being used
             if entry.query_has_facets():
                 continue
 
-            namespace = entry.get_namespace()
             # We are only interested in queries made to a specific domain (eg uniprotkb)
             # and not requests to resources such as /scripts, /style
-            if not namespace:
+            if not entry.has_valid_namespace():
                 continue
             to_write['date'] = yyyy_mm_dd
-            to_write['namespace'] = namespace
             to_write['user-agent-browser-family'] = entry.get_user_agent_browser_family()
 
             try:
-                resource, resource_type, resource_subpage = entry.get_resource()
-                if resource:
-                    to_write['resource'] = resource
-                    to_write['resource-type'] = resource_type or ''
-                    to_write['resource-subpage'] = resource_subpage or ''
+                # Parse resource
+                parsed = entry.parse_resource()
+                namespace, resource_type, datum = entry.get_uniprot_path_info(
+                    parsed)
+                to_write['namespace'] = namespace
+                to_write['resource_type'] = resource_type
+                to_write['datum'] = datum
+
+                # Parse referer
+                parsed = entry.parse_referer()
+                if 'uniprot.org' in parsed.netloc:
+                    namespace, resource_type, datum = entry.get_uniprot_path_info(
+                        parsed)
+                    to_write['referer'] = namespace
+                    to_write['referer_resource_type'] = resource_type
+                    to_write['referer_datum'] = datum
+                else:
+                    to_write['referer'] = parsed.netloc
             except Exception as e:
                 print(e, flush=True, file=sys.stderr)
 
-            to_write['referer'] = entry.get_referer()
             lines_to_write.append(to_write)
 
     return tally_n_requests, tally_bytes, lines_to_write

@@ -6,6 +6,8 @@ mkdir -p $ERROR_DIRECTORY
 mkdir -p $MAP_DIRECTORY
 
 find $LOG_DIRECTORY -name *.log > $LOG_FILE_LIST
+# Or use the following line for testing
+# find $LOG_DIRECTORY -name *.log > $LOG_FILE_LIST | head -n 10
 n=$(wc -l < $LOG_FILE_LIST)
 
 bsub \

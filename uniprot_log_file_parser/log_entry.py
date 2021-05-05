@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import re
-import urllib.parse
+from urllib.parse import unquote, parse_qs, urlparse
 from pathlib import PurePosixPath
 from datetime import datetime
 import pytz
@@ -10,23 +10,29 @@ import sys
 from .patterns import BOT_RE, PROGRAMMATIC_RE, UNKNOWN_RE
 from .utils import clean
 
-NAMESPACES = [
+TOOL_NAMESPACES = {
     'align',
     'blast',
+    'peptidesearch',
+    'uploadlists',
+}
+
+DATA_NAMESPACES = {
     'citations',
     'database',
     'diseases',
+    'help',
     'keywords',
     'locations',
-    'peptidesearch',
     'proteomes',
     'sparql',
     'taxonomy',
     'uniparc',
     'uniprot',
     'uniref',
-    'uploadlists',
-]
+}
+
+NAMESPACES = TOOL_NAMESPACES | DATA_NAMESPACES
 
 
 ENTRY_RE = re.compile(
@@ -54,24 +60,24 @@ RESOURCE_RE = re.compile(r'GET\s(?P<resource>.*)\sHTTP/.*',
 #     r'^/uniprot/(?P<accession>([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z]([0-9][A-Z][A-Z0-9]{2}){1,2}[0-9])(-[0-9]+)?)', re.IGNORECASE | re.DOTALL)
 
 
-ENTRY_NAMESPACES = [
-    'citations',
-    'database',
-    'diseases',
-    'keywords',
-    'locations',
-    'proteomes',
-    'taxonomy',
-    'uniparc',
-    'uniprot',
-    'uniref',
-]
+# ENTRY_NAMESPACES = [
+#     'citations',
+#     'database',
+#     'diseases',
+#     'keywords',
+#     'locations',
+#     'proteomes',
+#     'taxonomy',
+#     'uniparc',
+#     'uniprot',
+#     'uniref',
+# ]
 
-ENTRY_RESOURCE_RE = re.compile(r'^/(' + '|'.join(ENTRY_NAMESPACES) +
-                               r')/(?P<id>[^./]+)(?P<ext>\.[^/]*)')
+# RESOURCE_ENTRY_RE = re.compile(r'^/(' + '|'.join(ENTRY_NAMESPACES) +
+#                                r')/(?P<id>[^./]+)(?P<ext>\.[^/]*)')
 
-ENTRY_SUB_RESOURCE_RE = re.compile(r'^/(' + '|'.join(ENTRY_NAMESPACES) +
-                                   r')/(?P<id>[^./]+)/(?P<subpage>.*)')
+# RESOURCE_ENTRY_SUB_RE = re.compile(r'^/(' + '|'.join(ENTRY_NAMESPACES) +
+#                                    r')/(?P<id>[^./]+)/(?P<subpage>.*)')
 
 TOO_OLD = datetime(2002, 1, 1, 0, 0, 0, 0, pytz.UTC)
 
@@ -115,7 +121,7 @@ class LogEntryQueryError(Exception):
 
 class LogEntry():
     def __init__(self, line):
-        line = urllib.parse.unquote(urllib.parse.unquote(line))
+        line = unquote(unquote(line))
         m = ENTRY_RE.match(line)
         if not m:
             raise LogEntryParseError(line)
@@ -129,7 +135,7 @@ class LogEntry():
         self.user_agent = user_agents_parser(self.user_agent)
 
     def is_bot(self):
-        return self.user_agent.is_bot and self.get_user_agent_browser_family() not in NON_BOT_APPS
+        return self.user_agent.is_bot or self.get_user_agent_browser_family() not in NON_BOT_APPS
 
     def is_get(self):
         return self.resource.lower().startswith('get')
@@ -172,32 +178,91 @@ class LogEntry():
         except ValueError as e:
             print(self.line, e, flush=True, file=sys.stderr)
 
-    def get_namespace(self):
+    def has_valid_namespace(self):
         paths = PurePosixPath(self.resource).parts
         if len(paths) > 1:
             namespace = paths[1].lower()
-            if namespace in NAMESPACES:
-                return namespace
+            return namespace in NAMESPACES
+        return False
 
     def get_resource(self):
         m = RESOURCE_RE.match(self.resource)
         assert m, f'Cannot get parameters from {self.resource}'
         resource = m.group('resource')
-        params = urllib.parse.urlparse(resource)
-        parsed_params = urllib.parse.parse_qs(params.query)
-        if 'query' in parsed_params:
-            query = parsed_params['query']
-            if len(query) != 1:
-                raise LogEntryQueryError(self.line)
-            return (clean(query[0]), 'query', None)
-        m = ENTRY_SUB_RESOURCE_RE.match(resource)
-        if m and m.group('id') and m.group('subpage'):
-            return (m.group('id'), 'entry-subpage', m.group('subpage'))
-        m = ENTRY_RESOURCE_RE.match(resource)
-        if m and m.group('id'):
-            return (m.group('id'), 'entry', None)
-        return (resource, None, None)
+        return resource
+        # params = urllib.parse.urlparse(resource)
+        # parsed_params = urllib.parse.parse_qs(params.query)
+        # if 'query' in parsed_params:
+        #     query = parsed_params['query']
+        #     if len(query) != 1:
+        #         raise LogEntryQueryError(self.line)
+        #     return (clean(query[0]), 'query', None)
+        # m = RESOURCE_ENTRY_SUB_RE.match(resource)
+        # if m and m.group('id') and m.group('subpage'):
+        #     return (m.group('id'), 'entry-subpage', m.group('subpage'))
+        # m = RESOURCE_ENTRY_RE.match(resource)
+        # if m and m.group('id'):
+        #     return (m.group('id'), 'entry', None)
+        # return (resource, None, None)
 
     def get_referer(self):
-        r = urllib.parse.urlparse(self.referer)
-        return r.netloc
+        return self.referer
+        # r = urllib.parse.urlparse(self.referer)
+        # return r.netloc
+
+    def parse_resource(self):
+        return urlparse(self.get_resource())
+
+    def parse_referer(self):
+        return urlparse(self.referer)
+
+    def get_uniprot_path_info(self, parsed):
+        """Connects to the next available port.
+
+        Args:
+            path: the relative path of the resource within UniProt
+
+        Returns:
+            namespace: the namespace of the resource | homepage
+            resource_type: homepage | results | entry
+            dataum:
+                results --> query
+                entry --> accession/ID
+                blast|peptidesearch results --> namespace of results
+        """
+        if parsed.path == '/':
+            return 'homepage', 'homepage', None
+
+        parts = PurePosixPath(urlparse(parsed.path).path).parts
+        datum = None
+        resource_type = None
+        namespace = parts[1]
+        if parts[1] in TOOL_NAMESPACES:
+            namespace = parts[1]
+            if len(parts) == 2:
+                resource_type = 'job-submission'
+                # TODO: look at ?about parameter
+            elif len(parts) == 3:
+                resource_type = 'results'
+            elif len(parts) == 4:
+                resource_type = 'results'
+                datum = parts[2]
+        else:
+            if len(parts) == 1:
+                return parts
+            elif len(parts) == 2:
+                parsed_params = parse_qs(parsed.query)
+                if 'query' in parsed_params and parsed_params['query']:
+                    q = parsed_params['query']
+                    datum = clean(' '.join(q))
+                resource_type = 'results'
+            elif len(parts) >= 3:
+                datum = parts[2]
+                if len(parts) == 3:
+                    resource_type = 'entry'
+                elif len(parts) == 4:
+                    resource_type = f'entry-{parts[3]}'
+                else:
+                    print(parts)
+                    print('more than 4')
+        return namespace, resource_type, datum
