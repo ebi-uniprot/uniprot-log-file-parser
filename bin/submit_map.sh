@@ -7,7 +7,7 @@ mkdir -p $MAP_DIRECTORY
 
 find $LOG_DIRECTORY -name *.log > $LOG_FILE_LIST
 # Or use the following line for testing
-# find $LOG_DIRECTORY -name *.log > $LOG_FILE_LIST | head -n 10
+# find $LOG_DIRECTORY -name *.log | head -n 10 > $LOG_FILE_LIST 
 n=$(wc -l < $LOG_FILE_LIST)
 
 bsub \

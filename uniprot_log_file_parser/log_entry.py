@@ -106,6 +106,14 @@ BROWSER_APPS = {
     'Chromium',
     'Samsung Internet',
     'Chrome Mobile iOS',
+    'Chrome Mobile WebView',
+    'Yandex Browser'
+    'Thunderbird',
+    'Camino',
+    'Firefox Mobile',
+    'Vivaldi',
+    'Opera Mobile',
+    'Opera Mini'
 }
 
 NON_BOT_APPS = PROGRAMMATIC_APPS | BROWSER_APPS
