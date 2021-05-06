@@ -15,12 +15,15 @@ TOOL_NAMESPACES = {
     'blast',
     'peptidesearch',
     'uploadlists',
+    'mapping'
 }
 
 DATA_NAMESPACES = {
     'citations',
     'database',
     'diseases',
+    'docs',
+    'program',
     'help',
     'keywords',
     'locations',
@@ -30,9 +33,18 @@ DATA_NAMESPACES = {
     'uniparc',
     'uniprot',
     'uniref',
+    'unirule',
+
 }
 
-NAMESPACES = TOOL_NAMESPACES | DATA_NAMESPACES
+OTHER_NAMESPACES = {
+    'feedback',
+    'downloads',
+    'core',
+    'news',
+}
+
+NAMESPACES = TOOL_NAMESPACES | DATA_NAMESPACES | OTHER_NAMESPACES
 
 
 ENTRY_RE = re.compile(
@@ -268,7 +280,7 @@ class LogEntry():
                     datum = clean(' '.join(q))
                 resource_type = 'results'
             elif len(parts) >= 3:
-                datum = parts[2]
+                datum = parts[2].split('.')[0]
                 if len(parts) == 3:
                     resource_type = 'entry'
                 elif len(parts) == 4:
