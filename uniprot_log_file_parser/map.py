@@ -92,7 +92,7 @@ def parse_log_file(log_file_path):
                 to_write['resource_type'] = resource_type
                 to_write['datum'] = datum
 
-                if resource_type == 'results' and namespace == 'uniprot' and datum:
+                if resource_type == 'results' and namespace == 'uniprot' and entry.is_browser() and datum:
                     field_value_counts = get_field_to_value_counts_from_query(
                         datum)
                     tally_field_names += Counter(field_value_counts.keys())
