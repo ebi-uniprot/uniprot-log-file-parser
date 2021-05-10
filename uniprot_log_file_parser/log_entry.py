@@ -262,7 +262,7 @@ class LogEntry():
                 entry --> accession/ID
                 blast|peptidesearch results --> namespace of results
         """
-        if parsed.path == '/':
+        if parsed.path in ['/', '']:
             return 'homepage', 'homepage', None
 
         parts = PurePosixPath(urlparse(parsed.path).path).parts

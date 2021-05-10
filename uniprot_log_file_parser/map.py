@@ -92,15 +92,6 @@ def parse_log_file(log_file_path):
                 to_write['resource_type'] = resource_type
                 to_write['datum'] = datum
 
-                if resource_type == 'results' and namespace == 'uniprot' and entry.is_browser() and datum:
-                    field_value_counts = get_field_to_value_counts_from_query(
-                        datum)
-                    tally_field_names += Counter(field_value_counts.keys())
-                    tally_number_fields[len(field_value_counts)] += 1
-
-                    # if field_value_counts:
-                    #     to_write['fields'] = field_value_counts.keys()
-
                 # Parse referer
                 parsed = entry.parse_referer()
                 if 'uniprot.org' in parsed.netloc:
@@ -111,6 +102,13 @@ def parse_log_file(log_file_path):
                     to_write['referer_datum'] = datum
                 else:
                     to_write['referer'] = simplify_domain(parsed.netloc)
+
+                if resource_type == 'results' and namespace == 'uniprot' and entry.is_browser() and datum:
+                    field_value_counts = get_field_to_value_counts_from_query(
+                        datum)
+                    tally_field_names += Counter(field_value_counts.keys())
+                    tally_number_fields[len(field_value_counts)] += 1
+
             except Exception as e:
                 print(e, log_file_path, line, flush=True, file=sys.stderr)
 

@@ -16,7 +16,10 @@ def get_lucene_query_tree(query):
 
 
 def get_field_to_value_counts_from_query(query):
-    tree = get_lucene_query_tree(query)
+    try:
+        tree = get_lucene_query_tree(query)
+    except:
+        tree = get_lucene_query_tree(query.replace('[', ' ').replace(']', ''))
     return get_field_to_value_counts_from_query_tree(tree)
 
 
