@@ -148,7 +148,7 @@ def main():
                             'field-names', tally_field_names)
     if tally_field_names:
         write_counts_to_csv(out_directory, log_file_path,
-                            'number-fields', tally_number_fields)
+                            'n-fields', tally_number_fields)
 
 
 if __name__ == '__main__':
