@@ -112,7 +112,7 @@ def parse_log_file(log_file_path):
                 else:
                     to_write['referer'] = simplify_domain(parsed.netloc)
             except Exception as e:
-                print(e, flush=True, file=sys.stderr)
+                print(e, log_file_path, line, flush=True, file=sys.stderr)
 
             lines_to_write.append(to_write)
 
