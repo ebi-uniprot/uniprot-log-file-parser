@@ -29,6 +29,7 @@ def parse_log_file(log_file_path):
     tally_bytes = defaultdict(int)
     lines_to_write = []
     tally_field_names = Counter()
+    tally_number_fields = defaultdict(int)
     with open(log_file_path, 'r', encoding='ISO-8859-1') as f:
         line_number = 0
         while True:
@@ -95,6 +96,8 @@ def parse_log_file(log_file_path):
                     field_value_counts = get_field_to_value_counts_from_query(
                         datum)
                     tally_field_names += Counter(field_value_counts.keys())
+                    tally_number_fields[len(field_value_counts)] += 1
+
                     # if field_value_counts:
                     #     to_write['fields'] = field_value_counts.keys()
 
@@ -113,7 +116,7 @@ def parse_log_file(log_file_path):
 
             lines_to_write.append(to_write)
 
-    return tally_n_requests, tally_bytes, lines_to_write, tally_field_names
+    return tally_n_requests, tally_bytes, lines_to_write, tally_field_names, tally_number_fields
 
 
 def get_arguments():
@@ -130,7 +133,7 @@ def main():
     log_file_path, out_directory = get_arguments()
     print(
         f'Parsing: {log_file_path} and saving output to directory: {out_directory}')
-    tally_n_requests, tally_bytes, parsed, tally_field_names = parse_log_file(
+    tally_n_requests, tally_bytes, parsed, tally_field_names, tally_number_fields = parse_log_file(
         log_file_path)
     if tally_n_requests:
         write_counts_to_csv(out_directory, log_file_path,
@@ -143,6 +146,9 @@ def main():
     if tally_field_names:
         write_counts_to_csv(out_directory, log_file_path,
                             'field-names', tally_field_names)
+    if tally_field_names:
+        write_counts_to_csv(out_directory, log_file_path,
+                            'number-fields', tally_number_fields)
 
 
 if __name__ == '__main__':

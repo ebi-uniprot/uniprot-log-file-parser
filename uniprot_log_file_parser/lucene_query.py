@@ -28,7 +28,7 @@ def get_field_to_value_counts_from_query_tree(tree):
             value = clean(tree.expr.value)
             field_to_values[field].append(value)
         except:
-            pass
+            field_to_values[field].append(None)
     else:
         # TODO: handle when a node doesn't have a name
         pass
