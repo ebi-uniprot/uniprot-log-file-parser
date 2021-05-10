@@ -6,10 +6,11 @@ import argparse
 from collections import defaultdict
 from datetime import datetime
 import sys
+from collections import Counter
 
 from .log_entry import LogEntry
-#from .lucene_query import get_field_to_value_counts_from_query
-from .utils import merge_list_defaultdicts, write_counts_to_csv, write_parsed_lines_to_csv
+from .lucene_query import get_field_to_value_counts_from_query
+from .utils import merge_list_defaultdicts, write_counts_to_csv, write_parsed_lines_to_csv, simplify_domain
 
 FIELDNAMES = [
     'date',
@@ -26,8 +27,8 @@ FIELDNAMES = [
 def parse_log_file(log_file_path):
     tally_n_requests = defaultdict(int)
     tally_bytes = defaultdict(int)
-    # field_to_values = defaultdict(list)
     lines_to_write = []
+    tally_field_names = Counter()
     with open(log_file_path, 'r', encoding='ISO-8859-1') as f:
         line_number = 0
         while True:
@@ -81,7 +82,6 @@ def parse_log_file(log_file_path):
                 continue
             to_write['date'] = yyyy_mm_dd
             to_write['user-agent-browser-family'] = entry.get_user_agent_browser_family()
-
             try:
                 # Parse resource
                 parsed = entry.parse_resource()
@@ -90,6 +90,13 @@ def parse_log_file(log_file_path):
                 to_write['namespace'] = namespace
                 to_write['resource_type'] = resource_type
                 to_write['datum'] = datum
+
+                if resource_type == 'results' and namespace == 'uniprot' and datum:
+                    field_value_counts = get_field_to_value_counts_from_query(
+                        datum)
+                    tally_field_names += Counter(field_value_counts.keys())
+                    # if field_value_counts:
+                    #     to_write['fields'] = field_value_counts.keys()
 
                 # Parse referer
                 parsed = entry.parse_referer()
@@ -100,13 +107,13 @@ def parse_log_file(log_file_path):
                     to_write['referer_resource_type'] = resource_type
                     to_write['referer_datum'] = datum
                 else:
-                    to_write['referer'] = parsed.netloc
+                    to_write['referer'] = simplify_domain(parsed.netloc)
             except Exception as e:
                 print(e, flush=True, file=sys.stderr)
 
             lines_to_write.append(to_write)
 
-    return tally_n_requests, tally_bytes, lines_to_write
+    return tally_n_requests, tally_bytes, lines_to_write, tally_field_names
 
 
 def get_arguments():
@@ -123,7 +130,7 @@ def main():
     log_file_path, out_directory = get_arguments()
     print(
         f'Parsing: {log_file_path} and saving output to directory: {out_directory}')
-    tally_n_requests, tally_bytes, parsed = parse_log_file(
+    tally_n_requests, tally_bytes, parsed, tally_field_names = parse_log_file(
         log_file_path)
     if tally_n_requests:
         write_counts_to_csv(out_directory, log_file_path,
@@ -133,6 +140,9 @@ def main():
     if parsed:
         write_parsed_lines_to_csv(
             out_directory, log_file_path, 'parsed', parsed, FIELDNAMES)
+    if tally_field_names:
+        write_counts_to_csv(out_directory, log_file_path,
+                            'field-names', tally_field_names)
 
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ from datetime import datetime
 import pytz
 from user_agents import parse as user_agents_parser
 import sys
+from collections import Counter
 
 from .patterns import BOT_RE, PROGRAMMATIC_RE, UNKNOWN_RE
 from .utils import clean
@@ -67,6 +68,8 @@ ENTRY_RE = re.compile(
 
 RESOURCE_RE = re.compile(r'GET\s(?P<resource>.*)\sHTTP/.*',
                          re.IGNORECASE | re.DOTALL)
+
+# FIELD_NAME_RE = re.compile(r'([a-z][a-z0-9\,\-]+):', re.IGNORECASE)
 
 # UNIPROTKB_ENTRY_RE = re.compile(
 #     r'^/uniprot/(?P<accession>([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z]([0-9][A-Z][A-Z0-9]{2}){1,2}[0-9])(-[0-9]+)?)', re.IGNORECASE | re.DOTALL)
@@ -239,6 +242,9 @@ class LogEntry():
     def parse_referer(self):
         return urlparse(self.referer)
 
+    # def get_field_names(self, query):
+    #     return Counter(set(re.findall(FIELD_NAME_RE, query)))
+
     def get_uniprot_path_info(self, parsed):
         """Connects to the next available port.
 
@@ -275,9 +281,9 @@ class LogEntry():
                 return parts
             elif len(parts) == 2:
                 parsed_params = parse_qs(parsed.query)
-                if 'query' in parsed_params and parsed_params['query']:
-                    q = parsed_params['query']
-                    datum = clean(' '.join(q))
+                if 'query' in parsed_params and parsed_params['query'] and len(parsed_params['query']):
+                    datum = parsed_params['query'][0]
+                    # datum = clean(' '.join(q))
                 resource_type = 'results'
             elif len(parts) >= 3:
                 datum = parts[2].split('.')[0]
@@ -286,6 +292,5 @@ class LogEntry():
                 elif len(parts) == 4:
                     resource_type = f'entry-{parts[3]}'
                 else:
-                    print(parts)
-                    print('more than 4')
+                    print('more than 4', parts)
         return namespace, resource_type, datum

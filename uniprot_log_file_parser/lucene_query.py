@@ -24,8 +24,11 @@ def get_field_to_value_counts_from_query_tree(tree):
     field_to_values = defaultdict(list)
     if hasattr(tree, 'name'):
         field = clean(tree.name)
-        value = clean(tree.expr.value)
-        field_to_values[field].append(value)
+        try:
+            value = clean(tree.expr.value)
+            field_to_values[field].append(value)
+        except:
+            pass
     else:
         # TODO: handle when a node doesn't have a name
         pass
