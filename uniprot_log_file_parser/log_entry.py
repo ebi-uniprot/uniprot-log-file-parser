@@ -149,6 +149,7 @@ class LogEntry():
         if not m:
             raise LogEntryParseError(line)
         self.line = line
+        self.ip = m.group('ip1')
         self.date_time = m.group('date_time')
         self.user_agent = m.group('user_agent')
         self.response = m.group('response')
@@ -165,6 +166,9 @@ class LogEntry():
 
     def is_unknown_agent(self):
         return self.get_user_agent_browser_family() == 'Other'
+
+    def get_ip(self):
+        return self.ip
 
     def get_user_agent_browser_family(self):
         return self.user_agent.browser.family
