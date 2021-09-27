@@ -9,13 +9,11 @@ import sys
 from collections import Counter
 
 from .log_entry import LogEntry
-from .utils import  write_counts_to_csv, write_parsed_lines_to_csv
+from .utils import write_counts_to_csv, write_parsed_lines_to_csv
 
 FIELDNAMES = [
     'date',
-    'ip',
-    'user-agent-browser-family',
-    'namespace',
+    'api',
     'resource',
 ]
 
@@ -77,18 +75,10 @@ def parse_log_file(log_file_path):
             # and not requests to resources such as /scripts, /style
             if not entry.has_valid_namespace():
                 continue
-            to_write['date'] = yyyy_mm_dd
-            to_write['user-agent-browser-family'] = entry.get_user_agent_browser_family()
-            try:
-                # Parse resource
-                parsed = entry.parse_resource()
-                namespace, _, _= entry.get_uniprot_path_info(
-                    parsed)
-                to_write['namespace'] = namespace
-                to_write['resource'] = parsed.path
 
-            except Exception as e:
-                print(e, log_file_path, line, flush=True, file=sys.stderr)
+            to_write['date'] = yyyy_mm_dd
+            to_write['api'] = entry.is_api()
+            to_write['resource'] = entry.resource
 
             lines_to_write.append(to_write)
 

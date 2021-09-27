@@ -179,6 +179,9 @@ class LogEntry():
     def is_browser(self):
         return self.get_user_agent_browser_family() in BROWSER_APPS
 
+    def is_api(self):
+        return self.get_user_agent_browser_family() in PROGRAMMATIC_APPS
+
     def is_success(self):
         try:
             return int(self.response) == 200
