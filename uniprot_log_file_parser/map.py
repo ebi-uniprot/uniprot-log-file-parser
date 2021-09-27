@@ -9,19 +9,14 @@ import sys
 from collections import Counter
 
 from .log_entry import LogEntry
-from .lucene_query import get_field_to_value_counts_from_query
-from .utils import merge_list_defaultdicts, write_counts_to_csv, write_parsed_lines_to_csv, simplify_domain
+from .utils import  write_counts_to_csv, write_parsed_lines_to_csv
 
 FIELDNAMES = [
     'date',
     'ip',
     'user-agent-browser-family',
     'namespace',
-    'resource_type',
-    'datum',
-    'referer',
-    'referer_resource_type',
-    'referer_datum',
+    'resource',
 ]
 
 
@@ -78,7 +73,6 @@ def parse_log_file(log_file_path):
 
             if entry.is_opensearch():
                 continue
-            to_write['ip'] = entry.get_ip()
             # We are only interested in queries made to a specific domain (eg uniprotkb)
             # and not requests to resources such as /scripts, /style
             if not entry.has_valid_namespace():
@@ -88,29 +82,10 @@ def parse_log_file(log_file_path):
             try:
                 # Parse resource
                 parsed = entry.parse_resource()
-                namespace, resource_type, datum = entry.get_uniprot_path_info(
+                namespace, _, _= entry.get_uniprot_path_info(
                     parsed)
                 to_write['namespace'] = namespace
-                to_write['resource_type'] = resource_type
-                to_write['datum'] = datum
-
-                # Parse referer
-                parsed = entry.parse_referer()
-                if 'uniprot.org' in parsed.netloc:
-                    namespace, resource_type, datum = entry.get_uniprot_path_info(
-                        parsed)
-                    to_write['referer'] = namespace
-                    to_write['referer_resource_type'] = resource_type
-                    to_write['referer_datum'] = datum
-                else:
-                    to_write['referer'] = simplify_domain(parsed.netloc)
-
-                # Include only internal referer or if no referer listed (assume to not be external in that case)
-                if (not parsed.netloc or 'uniprot.org' in parsed.netloc) and resource_type == 'results' and namespace == 'uniprot' and entry.is_browser() and datum:
-                    field_value_counts = get_field_to_value_counts_from_query(
-                        datum)
-                    tally_field_names += Counter(field_value_counts.keys())
-                    tally_number_fields[len(field_value_counts)] += 1
+                to_write['resource'] = parsed.path
 
             except Exception as e:
                 print(e, log_file_path, line, flush=True, file=sys.stderr)

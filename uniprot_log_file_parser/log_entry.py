@@ -253,7 +253,7 @@ class LogEntry():
     #     return Counter(set(re.findall(FIELD_NAME_RE, query)))
 
     def get_uniprot_path_info(self, parsed):
-        """Connects to the next available port.
+        """
 
         Args:
             path: the relative path of the resource within UniProt
