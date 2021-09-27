@@ -78,7 +78,7 @@ def parse_log_file(log_file_path):
 
             to_write['date'] = yyyy_mm_dd
             to_write['api'] = entry.is_api()
-            to_write['resource'] = entry.resource
+            to_write['resource'] = entry.get_resource()
 
             lines_to_write.append(to_write)
 
