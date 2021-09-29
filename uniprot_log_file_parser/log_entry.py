@@ -179,6 +179,9 @@ class LogEntry():
     def is_browser(self):
         return self.get_user_agent_browser_family() in BROWSER_APPS
 
+    def is_api(self):
+        return self.get_user_agent_browser_family() in PROGRAMMATIC_APPS
+
     def is_success(self):
         try:
             return int(self.response) == 200
@@ -239,65 +242,20 @@ class LogEntry():
         # return (resource, None, None)
 
     def get_referer(self):
+        if self.referer == '-':
+            return None
         return self.referer
         # r = urllib.parse.urlparse(self.referer)
         # return r.netloc
 
-    def parse_resource(self):
-        return urlparse(self.get_resource())
-
-    def parse_referer(self):
-        return urlparse(self.referer)
-
     # def get_field_names(self, query):
     #     return Counter(set(re.findall(FIELD_NAME_RE, query)))
 
-    def get_uniprot_path_info(self, parsed):
-        """Connects to the next available port.
-
-        Args:
-            path: the relative path of the resource within UniProt
-
-        Returns:
-            namespace: the namespace of the resource | homepage
-            resource_type: homepage | results | entry
-            dataum:
-                results --> query
-                entry --> accession/ID
-                blast|peptidesearch results --> namespace of results
-        """
+    def get_uniprot_namespace(self, resource):
+        parsed = urlparse(resource)
         if parsed.path in ['/', '']:
-            return 'homepage', 'homepage', None
-
+            return 'homepage'
         parts = PurePosixPath(urlparse(parsed.path).path).parts
-        datum = None
-        resource_type = None
-        namespace = parts[1]
-        if parts[1] in TOOL_NAMESPACES:
-            namespace = parts[1]
-            if len(parts) == 2:
-                resource_type = 'job-submission'
-                # TODO: look at ?about parameter
-            elif len(parts) == 3:
-                resource_type = 'results'
-            elif len(parts) == 4:
-                resource_type = 'results'
-                datum = parts[2]
-        else:
-            if len(parts) == 1:
-                return parts
-            elif len(parts) == 2:
-                parsed_params = parse_qs(parsed.query)
-                if 'query' in parsed_params and parsed_params['query'] and len(parsed_params['query']):
-                    datum = parsed_params['query'][0]
-                    # datum = clean(' '.join(q))
-                resource_type = 'results'
-            elif len(parts) >= 3:
-                datum = parts[2].split('.')[0]
-                if len(parts) == 3:
-                    resource_type = 'entry'
-                elif len(parts) == 4:
-                    resource_type = f'entry-{parts[3]}'
-                else:
-                    print('more than 4', parts)
-        return namespace, resource_type, datum
+        if len(parts):
+            return parts[1]
+        return None
