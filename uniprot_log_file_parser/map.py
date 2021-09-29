@@ -10,7 +10,6 @@ FIELDNAMES = [
     'date',
     'api',
     'resource',
-    'namespace',
     'referer',
 ]
 
@@ -76,7 +75,7 @@ def parse_log_file(log_file_path):
                 # Parse resource
                 resource = entry.get_resource()
                 to_write['resource'] = resource
-                to_write['namespace'] = entry.get_uniprot_namespace(resource)
+                # to_write['namespace'] = entry.get_uniprot_namespace(resource)
                 to_write['referer'] = entry.get_referer()
 
             except Exception as e:
