@@ -10,7 +10,7 @@ find $LOG_DIRECTORY -name *.log > $LOG_FILE_LIST
 # find $LOG_DIRECTORY -name *.log | head -n 10 > $LOG_FILE_LIST 
 n=$(wc -l < $LOG_FILE_LIST)
 
-mem=3000
+mem=4000
 
 bsub \
 -J"parse[1-$n]" \
