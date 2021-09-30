@@ -8,8 +8,10 @@ from .utils import write_counts_to_csv, write_parsed_lines_to_csv
 
 FIELDNAMES = [
     'date',
-    'api',
     'resource',
+    'api',
+    'user-agent',
+    'ip',
     'referer',
 ]
 
@@ -75,8 +77,9 @@ def parse_log_file(log_file_path):
                 # Parse resource
                 resource = entry.get_resource()
                 to_write['resource'] = resource
-                # to_write['namespace'] = entry.get_uniprot_namespace(resource)
                 to_write['referer'] = entry.get_referer()
+                to_write['user-agent'] = entry.get_user_agent_browser_family()
+                to_write['ip'] = entry.get_ip()
 
             except Exception as e:
                 print(e, log_file_path, line, flush=True, file=sys.stderr)
