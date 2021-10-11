@@ -15,8 +15,12 @@ FILE_LIST=$WORK_DIRECTORY/file_list.txt
 find $PARSED_DIRECTORY -name 2020*.csv > $FILE_LIST
 n=$(wc -l < $FILE_LIST)
 
+mem=4000
+
 bsub \
 -J"uniprotkb[1-$n]" \
+-M $mem \
+-R"select[mem>$mem] rusage[mem=$mem] span[hosts=1]" \
 -o $OUT_DIRECTORY/%J-%I \
 -e $ERROR_DIRECTORY/%J-%I \
 ./map_wrapper.sh $FILE_LIST 
