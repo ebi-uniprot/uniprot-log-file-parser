@@ -15,7 +15,7 @@ FIELDNAMES = [
     'referer',
 ]
 
-p = re.compile(r'^\/uniprot\/(?P<accession>([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z]([0-9][A-Z][A-Z0-9]{2}){1,2}[0-9])(-[0-9]+)?)', re.IGNORECASE | re.DOTALL)
+p = re.compile(r'^\/uniprot\/(?P<accession>([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z]([0-9][A-Z][A-Z0-9]{2}){1,2}[0-9])(-[0-9]+)?)$', re.IGNORECASE | re.DOTALL)
 
 results = {'api': defaultdict(int), 'browser': defaultdict(int)}
 
