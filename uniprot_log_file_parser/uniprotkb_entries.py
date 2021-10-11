@@ -30,10 +30,10 @@ with open(input_path, encoding='utf-8') as f:
 
 input_file_path, input_file_name = os.path.split(input_path)
 file_name_root = os.path.splitext(input_file_name)[0]
-version_dir = os.path.abspath(os.path.join(
+out_dir = os.path.abspath(os.path.join(
     input_file_path, '..', 'uniprotkb-entries'))
-os.makedirs(version_dir, exist_ok=True)
-output_file = os.path.join(version_dir, f'{file_name_root}.json')
+os.makedirs(out_dir, exist_ok=True)
+output_file = os.path.join(out_dir, f'{file_name_root}.json')
 
 with open(output_file, 'w', encoding='utf-8') as f:
     json.dump(results, f, ensure_ascii=False, indent=4)
