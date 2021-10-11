@@ -20,7 +20,7 @@ def main():
     version_dir = '/nfs/public/rw/homes/uni_adm/tmp/log_parsing/parsed-no-bots/uniprotkb-entries/'
     api = Counter()
     browser = Counter()
-    for file in glob(os.path.join(version_dir, '*1.json')):
+    for file in glob(os.path.join(version_dir, '*.json')):
         print(file)
         with open(file) as f:
             r = json.load(f)
