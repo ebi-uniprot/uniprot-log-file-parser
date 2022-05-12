@@ -4,6 +4,7 @@ from urllib.parse import unquote, parse_qs, urlparse
 from pathlib import PurePosixPath
 from datetime import datetime
 import pytz
+from requests_toolbelt import user_agent
 from user_agents import parse as user_agents_parser
 import sys
 from collections import Counter
@@ -11,124 +12,92 @@ from collections import Counter
 from .patterns import BOT_RE, PROGRAMMATIC_RE, UNKNOWN_RE
 from .utils import clean
 
-TOOL_NAMESPACES = {
-    'align',
-    'blast',
-    'peptidesearch',
-    'uploadlists',
-    'mapping'
-}
+TOOL_NAMESPACES = {"align", "blast", "peptidesearch", "uploadlists", "mapping"}
 
 DATA_NAMESPACES = {
-    'citations',
-    'database',
-    'diseases',
-    'docs',
-    'program',
-    'help',
-    'keywords',
-    'locations',
-    'proteomes',
-    'sparql',
-    'taxonomy',
-    'uniparc',
-    'uniprot',
-    'uniref',
-    'unirule',
-
+    "citations",
+    "database",
+    "diseases",
+    "docs",
+    "program",
+    "help",
+    "keywords",
+    "locations",
+    "proteomes",
+    "sparql",
+    "taxonomy",
+    "uniparc",
+    "uniprot",
+    "uniref",
+    "unirule",
 }
 
 OTHER_NAMESPACES = {
-    'feedback',
-    'downloads',
-    'core',
-    'news',
+    "feedback",
+    "downloads",
+    "core",
+    "news",
 }
 
 NAMESPACES = TOOL_NAMESPACES | DATA_NAMESPACES | OTHER_NAMESPACES
 
 
 ENTRY_RE = re.compile(
-    r'^(?P<ip1>.*?) '
-    r'(?P<unknown1>.*?) '
-    r'(?P<unknown2>.*?) '
-    r'\[(?P<date_time>.*?)\] '
-    r'\"(?P<resource>.*((HTTP\/[0-9\.]+)|null)?)\s*\" '
-    r'(?P<response>.*?) '
-    r'(?P<bytes>.*?) '
-    r'\"(?P<referer>.*?)\" '
-    r'\"(?P<user_agent>.*?)\" '
-    r'(?P<response_time>.*?) '
-    r'(?P<unknown4>.*?) '
-    r'(?P<content_type>.*?) '
-    r'(?P<ip2>.*?) '
-    r'(?P<unknown5>.*?)$',
-    re.DOTALL
+    r"^(?P<ip1>.*?) "
+    r"(?P<unknown1>.*?) "
+    r"(?P<unknown2>.*?) "
+    r"\[(?P<datetime>.*?)\] "
+    r"\"(?P<resource>.*((HTTP\/[0-9\.]+)|null)?)\s*\" "
+    r"(?P<response>.*?) "
+    r"(?P<bytes>.*?) "
+    r"\"(?P<referer>.*?)\" "
+    r"\"(?P<user_agent>.*?)\" "
+    r"(?P<response_time>.*?) "
+    r"(?P<unknown4>.*?) "
+    r"(?P<content_type>.*?) "
+    r"(?P<ip2>.*?) "
+    r"(?P<unknown5>.*?)$",
+    re.DOTALL,
 )
 
-RESOURCE_RE = re.compile(r'GET\s(?P<resource>.*)\sHTTP/.*',
-                         re.IGNORECASE | re.DOTALL)
-
-# FIELD_NAME_RE = re.compile(r'([a-z][a-z0-9\,\-]+):', re.IGNORECASE)
-
-# UNIPROTKB_ENTRY_RE = re.compile(
-#     r'^/uniprot/(?P<accession>([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z]([0-9][A-Z][A-Z0-9]{2}){1,2}[0-9])(-[0-9]+)?)', re.IGNORECASE | re.DOTALL)
-
-
-# ENTRY_NAMESPACES = [
-#     'citations',
-#     'database',
-#     'diseases',
-#     'keywords',
-#     'locations',
-#     'proteomes',
-#     'taxonomy',
-#     'uniparc',
-#     'uniprot',
-#     'uniref',
-# ]
-
-# RESOURCE_ENTRY_RE = re.compile(r'^/(' + '|'.join(ENTRY_NAMESPACES) +
-#                                r')/(?P<id>[^./]+)(?P<ext>\.[^/]*)')
-
-# RESOURCE_ENTRY_SUB_RE = re.compile(r'^/(' + '|'.join(ENTRY_NAMESPACES) +
-#                                    r')/(?P<id>[^./]+)/(?P<subpage>.*)')
+RESOURCE_RE = re.compile(
+    r"(?P<method>\w+)\s(?P<resource>.*)\sHTTP/.*", re.IGNORECASE | re.DOTALL
+)
 
 TOO_OLD = datetime(2002, 1, 1, 0, 0, 0, 0, pytz.UTC)
 
 PROGRAMMATIC_APPS = {
-    'Python Requests',
-    'Wget',
-    'Apache-HttpClient',
-    'libwww-perl',
-    'curl',
-    'Java'
+    "Python Requests",
+    "Wget",
+    "Apache-HttpClient",
+    "libwww-perl",
+    "curl",
+    "Java",
 }
 
 BROWSER_APPS = {
-    'Chrome',
-    'IE',
-    'Firefox',
-    'Opera',
-    'Safari',
-    'QQ Browser',
-    'Edge',
-    'Netscape',
-    'Mobile Safari',
-    'Sogou Explorer',
-    'Chrome Mobile',
-    'UC Browser',
-    'Chromium',
-    'Samsung Internet',
-    'Chrome Mobile iOS',
-    'Chrome Mobile WebView',
-    'Yandex Browser'
-    'Thunderbird',
-    'Camino',
-    'Firefox Mobile',
-    'Vivaldi',
-    'Opera Mobile',
-    'Opera Mini'
+    "Chrome",
+    "IE",
+    "Firefox",
+    "Opera",
+    "Safari",
+    "QQ Browser",
+    "Edge",
+    "Netscape",
+    "Mobile Safari",
+    "Sogou Explorer",
+    "Chrome Mobile",
+    "UC Browser",
+    "Chromium",
+    "Samsung Internet",
+    "Chrome Mobile iOS",
+    "Chrome Mobile WebView",
+    "Yandex Browser" "Thunderbird",
+    "Camino",
+    "Firefox Mobile",
+    "Vivaldi",
+    "Opera Mobile",
+    "Opera Mini",
 }
 
 NON_BOT_APPS = PROGRAMMATIC_APPS | BROWSER_APPS
@@ -142,30 +111,33 @@ class LogEntryQueryError(Exception):
     pass
 
 
-class LogEntry():
+class LogEntry:
     def __init__(self, line):
         line = unquote(unquote(line))
         m = ENTRY_RE.match(line)
         if not m:
             raise LogEntryParseError(line)
         self.line = line
-        self.ip = m.group('ip1')
-        self.date_time = m.group('date_time')
-        self.user_agent = m.group('user_agent')
-        self.response = m.group('response')
-        self.resource = m.group('resource')
-        self.bytes = m.group('bytes')
-        self.referer = m.group('referer')
+        self.ip = m.group("ip1")
+        self.datetime = datetime.strptime(m.group("datetime"), "%d/%b/%Y:%H:%M:%S %z")
+        self.user_agent = m.group("user_agent")
+        self.response = m.group("response")
+        self.resource = m.group("resource")
+        self.bytes = m.group("bytes")
+        self.referer = m.group("referer")
         self.user_agent = user_agents_parser(self.user_agent)
 
     def is_bot(self):
-        return self.user_agent.is_bot or self.get_user_agent_browser_family() not in NON_BOT_APPS
+        return (
+            self.user_agent.is_bot
+            or self.get_user_agent_browser_family() not in NON_BOT_APPS
+        )
 
     def is_get(self):
-        return self.resource.lower().startswith('get')
+        return self.resource.lower().startswith("get")
 
     def is_unknown_agent(self):
-        return self.get_user_agent_browser_family() == 'Other'
+        return self.get_user_agent_browser_family() == "Other"
 
     def get_ip(self):
         return self.ip
@@ -174,13 +146,27 @@ class LogEntry():
         return self.user_agent.browser.family
 
     def is_opensearch(self):
-        return 'opensearch.xml' in self.resource
+        return "opensearch.xml" in self.resource
 
     def is_browser(self):
         return self.get_user_agent_browser_family() in BROWSER_APPS
 
     def is_api(self):
         return self.get_user_agent_browser_family() in PROGRAMMATIC_APPS
+
+    def get_user_type(self):
+        if self.get_user_agent_browser_family() == "Other":
+            return "unknown"
+        if self.is_bot():
+            return "bot"
+        if self.is_api():
+            return "programmatic"
+        if self.is_browser():
+            return "browser"
+        return "unknown"
+
+    def get_response_code(self):
+        return self.response
 
     def is_success(self):
         try:
@@ -192,23 +178,15 @@ class LogEntry():
             print(self.line, e, flush=True, file=sys.stderr)
             return False
 
-    def query_has_facets(self):
-        """
-        &fil is used when the facets are activated. Eg https://www.uniprot.org/uniprot/?query=a4&fil=reviewed%3Ayes&sort=score means that the user has clicked on the reviewed facet after searching for a4
-        """
-        return '&fil=' in self.resource
-
     def is_request_unreasonably_old(self):
-        date_time = datetime.strptime(self.date_time, '%d/%b/%Y:%H:%M:%S %z')
-        return date_time < TOO_OLD
+        return self.datetime < TOO_OLD
 
-    def get_yyyy_mm_dd(self):
-        date_time = datetime.strptime(self.date_time, '%d/%b/%Y:%H:%M:%S %z')
-        return date_time.strftime("%Y-%m-%d")
+    def get_date_string(self):
+        return self.datetime.strftime("%Y%m%d-%H%M")
 
     def get_bytes(self):
         try:
-            if self.bytes == '-':
+            if self.bytes == "-":
                 return 0
             return int(float(self.bytes))
         except ValueError as e:
@@ -221,28 +199,15 @@ class LogEntry():
             return namespace in NAMESPACES
         return False
 
-    def get_resource(self):
+    def get_method_resource(self):
         m = RESOURCE_RE.match(self.resource)
-        assert m, f'Cannot get parameters from {self.resource}'
-        resource = m.group('resource')
-        return resource
-        # params = urllib.parse.urlparse(resource)
-        # parsed_params = urllib.parse.parse_qs(params.query)
-        # if 'query' in parsed_params:
-        #     query = parsed_params['query']
-        #     if len(query) != 1:
-        #         raise LogEntryQueryError(self.line)
-        #     return (clean(query[0]), 'query', None)
-        # m = RESOURCE_ENTRY_SUB_RE.match(resource)
-        # if m and m.group('id') and m.group('subpage'):
-        #     return (m.group('id'), 'entry-subpage', m.group('subpage'))
-        # m = RESOURCE_ENTRY_RE.match(resource)
-        # if m and m.group('id'):
-        #     return (m.group('id'), 'entry', None)
-        # return (resource, None, None)
+        assert m, f"Cannot get parameters from {self.resource}"
+        resource = m.group("resource")
+        method = m.group("method")
+        return method, resource
 
     def get_referer(self):
-        if self.referer == '-':
+        if self.referer == "-":
             return None
         return self.referer
         # r = urllib.parse.urlparse(self.referer)
@@ -253,8 +218,8 @@ class LogEntry():
 
     def get_uniprot_namespace(self, resource):
         parsed = urlparse(resource)
-        if parsed.path in ['/', '']:
-            return 'homepage'
+        if parsed.path in ["/", ""]:
+            return "homepage"
         parts = PurePosixPath(urlparse(parsed.path).path).parts
         if len(parts):
             return parts[1]
