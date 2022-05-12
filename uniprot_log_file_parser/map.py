@@ -6,7 +6,7 @@ import sys
 from .log_entry import LogEntry
 from .utils import write_counts_to_csv, write_parsed_lines_to_csv
 
-FIELDNAMES = ["datetime", "resource", "user_type", "method", "response_code"]
+FIELDNAMES = ["datetime", "user_type", "method", "resource"]
 
 
 def parse_log_file(log_file_path):
@@ -62,7 +62,6 @@ def parse_log_file(log_file_path):
                 method, resource = entry.get_method_resource()
                 to_write["method"] = method
                 to_write["resource"] = resource
-                to_write["response_code"] = entry.get_response_code()
                 to_write["user_type"] = entry.get_user_type()
 
             except Exception as e:

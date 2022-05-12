@@ -4,10 +4,8 @@ from urllib.parse import unquote, parse_qs, urlparse
 from pathlib import PurePosixPath
 from datetime import datetime
 import pytz
-from requests_toolbelt import user_agent
 from user_agents import parse as user_agents_parser
 import sys
-from collections import Counter
 
 from .patterns import BOT_RE, PROGRAMMATIC_RE, UNKNOWN_RE
 from .utils import clean
