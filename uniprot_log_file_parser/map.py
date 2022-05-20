@@ -2,12 +2,15 @@
 import argparse
 from collections import defaultdict
 import sys
+import os.path
+import csv
+import json
 
 from .log_entry import LogEntry
-from .utils import write_counts_to_csv, write_parsed_lines
+from .utils import get_out_filename, write_counts_to_csv, write_parsed_lines
 
 
-def parse_log_file(log_file_path):
+def parse_log_file(log_file_path, out_directory):
 
     method_to_id = {
         "GET": 1,
@@ -73,19 +76,26 @@ def parse_log_file(log_file_path):
                 to_write["MethodId"] = method_to_id[method]
                 to_write["Resource"] = resource
                 to_write["Status"] = status
-                # to_write["UserAgentFamily"] = entry.get_user_agent_browser_family()
                 to_write["SizeBytes"] = entry.get_bytes()
                 to_write["ResponseTime"] = entry.get_response_time()
                 to_write["Referer"] = entry.get_referer()
-                # to_write["IsBot"] = entry.is_bot()
                 to_write["UserAgent"] = entry.get_user_agent()
                 lines_to_write.append(to_write)
 
             except Exception as e:
                 print(e, log_file_path, line, flush=True, file=sys.stderr)
-                continue
 
-    return tally_n_requests, lines_to_write
+    parsed_filename = get_out_filename(log_file_path, "parsed", "json")
+    parsed_filepath = os.path.join(out_directory, parsed_filename)
+    with open(parsed_filepath, "w") as f:
+        json.dump(lines_to_write, f)
+
+    tally_filename = get_out_filename(log_file_path, "n-requests", "csv")
+    tally_filepath = os.path.join(out_directory, tally_filename)
+    with open(tally_filepath, "w") as f:
+        writer = csv.writer(f)
+        for k, v in tally_n_requests.items():
+            writer.writerow([k, v])
 
 
 def get_arguments():
@@ -105,13 +115,7 @@ def get_arguments():
 def main():
     log_file_path, out_directory = get_arguments()
     print(f"Parsing: {log_file_path} and saving output to directory: {out_directory}")
-    tally_n_requests, parsed = parse_log_file(log_file_path)
-    if tally_n_requests:
-        write_counts_to_csv(
-            out_directory, log_file_path, "n-requests", tally_n_requests
-        )
-    if parsed:
-        write_parsed_lines(out_directory, log_file_path, "parsed", parsed)
+    parse_log_file(log_file_path, out_directory)
 
 
 if __name__ == "__main__":

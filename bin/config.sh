@@ -1,6 +1,6 @@
 #!/bin/bash
 DATETIME=$(date '+%Y.%m.%d-%H.%M.%S')
-LOG_PARSING_DIRECTORY=/net/isilonP/public/rw/homes/uni_adm/tmp/log_parsing/sql
+LOG_PARSING_DIRECTORY=/net/isilonP/public/rw/homes/uni_adm/tmp/log_parsing/sql2
 MAP_DIRECTORY=$LOG_PARSING_DIRECTORY/map
 OUT_DIRECTORY=$LOG_PARSING_DIRECTORY/out
 ERROR_DIRECTORY=$LOG_PARSING_DIRECTORY/error
