@@ -128,7 +128,7 @@ class LogEntry:
         self.bytes = m.group("bytes")
         self.referer = m.group("referer")
         self.response_time = m.group("response_time")
-        self.user_agent = user_agents_parser(self.user_agent)
+        # self.user_agent = user_agents_parser(self.user_agent)
 
     def is_bot(self):
         return self.user_agent.is_bot
@@ -142,8 +142,11 @@ class LogEntry:
     def get_ip(self):
         return self.ip
 
-    def get_user_agent_browser_family(self):
-        return self.user_agent.browser.family
+    # def get_user_agent_browser_family(self):
+    #     return self.user_agent.browser.family
+
+    def get_user_agent(self):
+        return self.user_agent
 
     def is_static(self):
         return bool(STATIC_RE.search(self.resource))

@@ -4,22 +4,23 @@ from collections import defaultdict
 import sys
 
 from .log_entry import LogEntry
-from .utils import write_counts_to_csv, write_parsed_lines_to_csv
-
-FIELDNAMES = [
-    "resource",
-    "size_bytes",
-    "timestamp",
-    "status",
-    "referer",
-    "response_time",
-    "user_agent_family",
-    "method",
-    "is_bot",
-]
+from .utils import write_counts_to_csv, write_parsed_lines
 
 
 def parse_log_file(log_file_path):
+
+    method_to_id = {
+        "GET": 1,
+        "HEAD": 2,
+        "POST": 3,
+        "PUT": 4,
+        "DELETE": 5,
+        "CONNECT": 6,
+        "OPTIONS": 7,
+        "TRACE": 8,
+        "PATCH": 9,
+    }
+
     tally_n_requests = defaultdict(int)
     lines_to_write = []
     with open(log_file_path, "r", encoding="ISO-8859-1") as f:
@@ -59,22 +60,36 @@ def parse_log_file(log_file_path):
             # Daily data traffic
             date_string = entry.get_date_string()
             tally_n_requests[date_string] += 1
+            # [Resource] TEXT NOT NULL,
+            #     [SizeBytes] INTEGER,
+            #     [DateTime] timestamp NOT NULL,
+            #     [Status] INTEGER NOT NULL,
+            #     [Referer] TEXT,
+            #     [ResponseTime] INTEGER,
+            #     [MethodId] INTEGER NOT NULL,
+            #     [UserAgentFamilyId] INTEGER NOT NULL,
+            #     [IsBot] BOOLEAN NOT NULL,
+            #     FOREIGN KEY (MethodId) REFERENCES HttpMethod(Id),
+            #     FOREIGN KEY (UserAgentFamilyId) REFERENCES UserAgentFamily(Id)
 
             try:
                 timestamp = entry.get_timestamp()
                 method, resource = entry.get_method_resource()
                 status = entry.get_response_code()
-                if not any([timestamp, method, resource, status]):
+                if not all(
+                    [timestamp, method, resource, status, method in method_to_id]
+                ):
                     continue
-                to_write["timestamp"] = timestamp
-                to_write["method"] = method
-                to_write["resource"] = resource
-                to_write["status"] = status
-                to_write["user_agent_family"] = entry.get_user_agent_browser_family()
-                to_write["size_bytes"] = entry.get_bytes()
-                to_write["response_time"] = entry.get_response_time()
-                to_write["referer"] = entry.get_referer()
-                to_write["is_bot"] = entry.is_bot()
+                to_write["DateTime"] = timestamp
+                to_write["MethodId"] = method_to_id[method]
+                to_write["Resource"] = resource
+                to_write["Status"] = status
+                # to_write["UserAgentFamily"] = entry.get_user_agent_browser_family()
+                to_write["SizeBytes"] = entry.get_bytes()
+                to_write["ResponseTime"] = entry.get_response_time()
+                to_write["Referer"] = entry.get_referer()
+                # to_write["IsBot"] = entry.is_bot()
+                to_write["UserAgent"] = entry.get_user_agent()
 
             except Exception as e:
                 print(e, log_file_path, line, flush=True, file=sys.stderr)
@@ -108,9 +123,7 @@ def main():
             out_directory, log_file_path, "n-requests", tally_n_requests
         )
     if parsed:
-        write_parsed_lines_to_csv(
-            out_directory, log_file_path, "parsed", parsed, FIELDNAMES
-        )
+        write_parsed_lines(out_directory, log_file_path, "parsed", parsed)
 
 
 if __name__ == "__main__":
