@@ -1,6 +1,7 @@
 from collections import defaultdict
 import os.path
 import csv
+import pandas as pd
 
 
 def get_root_out_filename(log_file_path):
@@ -27,10 +28,12 @@ def write_parsed_lines_to_csv(
 ):
     csv_out_filename = get_csv_out_filename(log_file_path, suffix)
     csv_file_path = os.path.join(out_directory, csv_out_filename)
-    with open(csv_file_path, "w", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        for d in parsed_lines:
-            writer.writerow(d)
+    df = pd.DataFrame(parsed_lines, columns=fieldnames)
+    df.to_csv(csv_file_path, index=False)
+    # with open(csv_file_path, "w", encoding="utf-8") as f:
+    #     writer = csv.DictWriter(f, fieldnames=fieldnames)
+    #     for d in parsed_lines:
+    #         writer.writerow(d)
 
 
 def merge_list_defaultdicts(d1, d2):

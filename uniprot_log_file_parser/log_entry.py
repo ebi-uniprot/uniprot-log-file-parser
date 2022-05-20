@@ -62,6 +62,10 @@ RESOURCE_RE = re.compile(
     r"(?P<method>\w+)\s(?P<resource>.*)\sHTTP/.*", re.IGNORECASE | re.DOTALL
 )
 
+STATIC_RE = re.compile(
+    r"(/(images|scripts|style))|(\.(ico|css|png|jpg|svg|js|woff))|opensearch.xml"
+)
+
 TOO_OLD = datetime(2002, 1, 1, 0, 0, 0, 0, pytz.UTC)
 
 PROGRAMMATIC_APPS = {
@@ -119,17 +123,15 @@ class LogEntry:
         self.ip = m.group("ip1")
         self.datetime = datetime.strptime(m.group("datetime"), "%d/%b/%Y:%H:%M:%S %z")
         self.user_agent = m.group("user_agent")
-        self.response = m.group("response")
+        self.response = int(m.group("response"))
         self.resource = m.group("resource")
         self.bytes = m.group("bytes")
         self.referer = m.group("referer")
+        self.response_time = m.group("response_time")
         self.user_agent = user_agents_parser(self.user_agent)
 
     def is_bot(self):
-        return (
-            self.user_agent.is_bot
-            or self.get_user_agent_browser_family() not in NON_BOT_APPS
-        )
+        return self.user_agent.is_bot
 
     def is_get(self):
         return self.resource.lower().startswith("get")
@@ -142,6 +144,9 @@ class LogEntry:
 
     def get_user_agent_browser_family(self):
         return self.user_agent.browser.family
+
+    def is_static(self):
+        return bool(STATIC_RE.search(self.resource))
 
     def is_opensearch(self):
         return "opensearch.xml" in self.resource
@@ -182,10 +187,16 @@ class LogEntry:
     def get_date_string(self):
         return self.datetime.strftime("%Y%m%d-%H%M")
 
+    def get_timestamp(self):
+        return int(self.datetime.timestamp())
+
+    def get_response_time(self):
+        return self.response_time
+
     def get_bytes(self):
         try:
             if self.bytes == "-":
-                return 0
+                return None
             return int(float(self.bytes))
         except ValueError as e:
             print(self.line, e, flush=True, file=sys.stderr)
@@ -208,17 +219,4 @@ class LogEntry:
         if self.referer == "-":
             return None
         return self.referer
-        # r = urllib.parse.urlparse(self.referer)
-        # return r.netloc
 
-    # def get_field_names(self, query):
-    #     return Counter(set(re.findall(FIELD_NAME_RE, query)))
-
-    def get_uniprot_namespace(self, resource):
-        parsed = urlparse(resource)
-        if parsed.path in ["/", ""]:
-            return "homepage"
-        parts = PurePosixPath(urlparse(parsed.path).path).parts
-        if len(parts):
-            return parts[1]
-        return None

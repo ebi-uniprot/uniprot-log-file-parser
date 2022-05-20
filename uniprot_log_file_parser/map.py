@@ -6,7 +6,17 @@ import sys
 from .log_entry import LogEntry
 from .utils import write_counts_to_csv, write_parsed_lines_to_csv
 
-FIELDNAMES = ["datetime", "user_type", "method", "resource"]
+FIELDNAMES = [
+    "resource",
+    "size_bytes",
+    "timestamp",
+    "status",
+    "referer",
+    "response_time",
+    "user_agent_family",
+    "method",
+    "is_bot",
+]
 
 
 def parse_log_file(log_file_path):
@@ -38,7 +48,7 @@ def parse_log_file(log_file_path):
             if entry.is_request_unreasonably_old():
                 continue
 
-            if entry.is_opensearch():
+            if entry.is_static():
                 continue
 
             # We are only interested in queries made to a specific domain (eg uniprotkb)
@@ -50,22 +60,25 @@ def parse_log_file(log_file_path):
             date_string = entry.get_date_string()
             tally_n_requests[date_string] += 1
 
-            if not entry.is_success():
-                continue
-
-            if entry.get_user_type() == "unknown":
-                continue
-
-            to_write["datetime"] = date_string
             try:
-                # Parse resource
+                timestamp = entry.get_timestamp()
                 method, resource = entry.get_method_resource()
+                status = entry.get_response_code()
+                if not any([timestamp, method, resource, status]):
+                    continue
+                to_write["timestamp"] = timestamp
                 to_write["method"] = method
                 to_write["resource"] = resource
-                to_write["user_type"] = entry.get_user_type()
+                to_write["status"] = status
+                to_write["user_agent_family"] = entry.get_user_agent_browser_family()
+                to_write["size_bytes"] = entry.get_bytes()
+                to_write["response_time"] = entry.get_response_time()
+                to_write["referer"] = entry.get_referer()
+                to_write["is_bot"] = entry.is_bot()
 
             except Exception as e:
                 print(e, log_file_path, line, flush=True, file=sys.stderr)
+                continue
 
             lines_to_write.append(to_write)
 
