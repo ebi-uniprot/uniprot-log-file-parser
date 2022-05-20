@@ -56,9 +56,7 @@ ENTRY_RE = re.compile(
     re.DOTALL,
 )
 
-RESOURCE_RE = re.compile(
-    r"(?P<method>\w+)\s(?P<resource>.*)\sHTTP/.*", re.IGNORECASE | re.DOTALL
-)
+RESOURCE_RE = re.compile(r"(?P<method>\w+)\s(?P<resource>.*)\sHTTP/.*", re.DOTALL)
 
 STATIC_RE = re.compile(
     r"(/(images|scripts|style))|(\.(ico|css|png|jpg|svg|js|woff))|opensearch.xml"
