@@ -60,17 +60,6 @@ def parse_log_file(log_file_path):
             # Daily data traffic
             date_string = entry.get_date_string()
             tally_n_requests[date_string] += 1
-            # [Resource] TEXT NOT NULL,
-            #     [SizeBytes] INTEGER,
-            #     [DateTime] timestamp NOT NULL,
-            #     [Status] INTEGER NOT NULL,
-            #     [Referer] TEXT,
-            #     [ResponseTime] INTEGER,
-            #     [MethodId] INTEGER NOT NULL,
-            #     [UserAgentFamilyId] INTEGER NOT NULL,
-            #     [IsBot] BOOLEAN NOT NULL,
-            #     FOREIGN KEY (MethodId) REFERENCES HttpMethod(Id),
-            #     FOREIGN KEY (UserAgentFamilyId) REFERENCES UserAgentFamily(Id)
 
             try:
                 timestamp = entry.get_timestamp()
@@ -90,12 +79,11 @@ def parse_log_file(log_file_path):
                 to_write["Referer"] = entry.get_referer()
                 # to_write["IsBot"] = entry.is_bot()
                 to_write["UserAgent"] = entry.get_user_agent()
+                lines_to_write.append(to_write)
 
             except Exception as e:
                 print(e, log_file_path, line, flush=True, file=sys.stderr)
                 continue
-
-            lines_to_write.append(to_write)
 
     return tally_n_requests, lines_to_write
 

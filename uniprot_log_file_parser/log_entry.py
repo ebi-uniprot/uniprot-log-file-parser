@@ -7,8 +7,6 @@ import pytz
 from user_agents import parse as user_agents_parser
 import sys
 
-from .patterns import BOT_RE, PROGRAMMATIC_RE, UNKNOWN_RE
-from .utils import clean
 
 TOOL_NAMESPACES = {"align", "blast", "peptidesearch", "uploadlists", "mapping"}
 
