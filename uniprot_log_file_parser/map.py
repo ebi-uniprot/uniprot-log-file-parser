@@ -3,28 +3,17 @@ import argparse
 from collections import defaultdict
 import sys
 import os.path
+from pathlib import Path
 import csv
-import json
+import pandas as pd
 
 from .log_entry import LogEntry
-from .utils import get_out_filename, write_counts_to_csv, write_parsed_lines
+from .utils import get_date_from_filename, get_out_filename
 
 
 def parse_log_file(log_file_path, out_directory):
 
-    method_to_id = {
-        "GET": 1,
-        "HEAD": 2,
-        "POST": 3,
-        "PUT": 4,
-        "DELETE": 5,
-        "CONNECT": 6,
-        "OPTIONS": 7,
-        "TRACE": 8,
-        "PATCH": 9,
-    }
-
-    tally_n_requests = defaultdict(int)
+    tally_bytes = defaultdict(int)
     lines_to_write = []
     with open(log_file_path, "r", encoding="ISO-8859-1") as f:
         line_number = 0
@@ -52,6 +41,12 @@ def parse_log_file(log_file_path, out_directory):
             if entry.is_request_unreasonably_old():
                 continue
 
+            # Daily data traffic
+            date_string = entry.get_date_string()
+            size_bytes = entry.get_bytes()
+            if size_bytes:
+                tally_bytes[date_string] += size_bytes
+
             if entry.is_static():
                 continue
 
@@ -60,41 +55,41 @@ def parse_log_file(log_file_path, out_directory):
             if not entry.has_valid_namespace():
                 continue
 
-            # Daily data traffic
-            date_string = entry.get_date_string()
-            tally_n_requests[date_string] += 1
-
             try:
                 timestamp = entry.get_timestamp()
                 method, resource = entry.get_method_resource()
                 status = entry.get_response_code()
-                if not all(
-                    [timestamp, method, resource, status, method in method_to_id]
-                ):
+                if not all([timestamp, method, resource, status]):
                     continue
                 to_write["DateTime"] = timestamp
-                to_write["MethodId"] = method_to_id[method]
+                to_write["Method"] = method
                 to_write["Resource"] = resource
                 to_write["Status"] = status
-                to_write["SizeBytes"] = entry.get_bytes()
+                to_write["SizeBytes"] = size_bytes
                 to_write["ResponseTime"] = entry.get_response_time()
                 to_write["Referer"] = entry.get_referer()
-                to_write["UserAgent"] = entry.get_user_agent()
+                to_write["UserAgentFamily"] = entry.get_user_agent_browser_family()
                 lines_to_write.append(to_write)
 
             except Exception as e:
                 print(e, log_file_path, line, flush=True, file=sys.stderr)
 
-    parsed_filename = get_out_filename(log_file_path, "parsed", "json")
-    parsed_filepath = os.path.join(out_directory, parsed_filename)
-    with open(parsed_filepath, "w") as f:
-        json.dump(lines_to_write, f)
+    log_date = get_date_from_filename(log_file_path)
+    parsed_filename = get_out_filename(log_file_path, "parsed", "csv")
+    parsed_directory = os.path.join(out_directory, "parsed", log_date)
+    Path(parsed_directory).mkdir(parents=True, exist_ok=True)
+    parsed_filepath = os.path.join(parsed_directory, parsed_filename)
+    print(parsed_filepath)
+    df = pd.DataFrame(lines_to_write)
+    df.to_csv(parsed_filepath, header=False, index=False)
 
-    tally_filename = get_out_filename(log_file_path, "n-requests", "csv")
-    tally_filepath = os.path.join(out_directory, tally_filename)
+    tally_filename = get_out_filename(log_file_path, "daily-bytes", "csv")
+    tally_directory = os.path.join(out_directory, "tally")
+    Path(tally_directory).mkdir(parents=True, exist_ok=True)
+    tally_filepath = os.path.join(tally_directory, tally_filename)
     with open(tally_filepath, "w") as f:
         writer = csv.writer(f)
-        for k, v in tally_n_requests.items():
+        for k, v in tally_bytes.items():
             writer.writerow([k, v])
 
 

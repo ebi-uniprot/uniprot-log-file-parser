@@ -1,12 +1,21 @@
 import os.path
 import csv
 import json
+import re
 
 
 def get_out_filename(log_file_path, suffix, ext):
     filepath, filename = os.path.split(log_file_path)
     _, server = os.path.split(filepath)
     return f"{server}-{filename}.{suffix}.{ext}"
+
+
+def get_date_from_filename(log_file_path):
+    p = re.compile(r"access_(?P<date>[0-9\-]+)\.log")
+    _, filename = os.path.split(log_file_path)
+    m = p.match(filename)
+    if m:
+        return m.group("date")
 
 
 def write_counts_to_csv(out_directory, log_file_path, suffix, count_dict):
