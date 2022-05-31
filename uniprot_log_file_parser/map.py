@@ -8,7 +8,7 @@ import csv
 import pandas as pd
 
 from .log_entry import LogEntry
-from .utils import get_date_from_filename, get_out_filename
+from .utils import get_YYYY_MM_from_filename, get_out_filename
 
 
 def parse_log_file(log_file_path, out_directory):
@@ -74,7 +74,7 @@ def parse_log_file(log_file_path, out_directory):
             except Exception as e:
                 print(e, log_file_path, line, flush=True, file=sys.stderr)
 
-    log_date = get_date_from_filename(log_file_path)
+    log_date = get_YYYY_MM_from_filename(log_file_path)
     parsed_filename = get_out_filename(log_file_path, "parsed", "csv")
     parsed_directory = os.path.join(out_directory, "parsed", log_date)
     Path(parsed_directory).mkdir(parents=True, exist_ok=True)
