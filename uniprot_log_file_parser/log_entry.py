@@ -44,11 +44,11 @@ ENTRY_RE = re.compile(
     r"(?P<unknown2>.*?) "
     r"\[(?P<datetime>.*?)\] "
     r"\"(?P<resource>.*((HTTP\/[0-9\.]+)|null)?)\s*\" "
-    r"(?P<response>.*?) "
+    r"(?P<response>\d+) "
     r"(?P<bytes>.*?) "
-    r"\"(?P<referer>.*?)\" "
+    r"\"(?P<referer>.*)\" "
     r"\"(?P<user_agent>.*?)\" "
-    r"(?P<response_time>.*?) "
+    r"(?P<response_time>[0-9\.]+) "
     r"(?P<unknown4>.*?) "
     r"(?P<content_type>.*?) "
     r"(?P<ip2>.*?) "
@@ -190,7 +190,7 @@ class LogEntry:
         return int(self.datetime.timestamp())
 
     def get_response_time(self):
-        return self.response_time
+        return float(self.response_time)
 
     def get_bytes(self):
         try:
