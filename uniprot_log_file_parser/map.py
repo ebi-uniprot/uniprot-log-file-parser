@@ -32,6 +32,7 @@ def parse_log_file(log_file_path, out_directory):
             if not line:
                 break
             try:
+                line = line.replace("%0D", "")
                 entry = LogEntry(line)
             except Exception as e:
                 print(e, flush=True, file=sys.stderr)
