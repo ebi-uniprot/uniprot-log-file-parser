@@ -10,12 +10,12 @@ def get_out_filename(log_file_path, suffix, ext):
     return f"{server}-{filename}.{suffix}.{ext}"
 
 
-def get_YYYY_MM_from_filename(log_file_path):
-    p = re.compile(r"access_(?P<YYYY_MM>\d{4}-\d{2})-\d{2}.log")
+def get_YYYY_MM_DD_from_filename(log_file_path):
+    p = re.compile(r"access_(?P<YYYY_MM_DD>\d{4}-\d{2}-\d{2}).log")
     _, filename = os.path.split(log_file_path)
     m = p.match(filename)
     if m:
-        return m.group("YYYY_MM")
+        return m.group("YYYY_MM_DD")
 
 
 def write_counts_to_csv(out_directory, log_file_path, suffix, count_dict):
