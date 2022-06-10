@@ -48,12 +48,9 @@ def parse_log_file(log_file_path, out_directory):
             if size_bytes:
                 tally_bytes[date_string] += size_bytes
 
-            if entry.is_static():
-                continue
-
             # We are only interested in queries made to a specific domain (eg uniprotkb)
             # and not requests to resources such as /scripts, /style
-            if not entry.has_valid_namespace():
+            if entry.is_static():
                 continue
 
             try:
