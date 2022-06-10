@@ -170,13 +170,6 @@ class LogEntry:
         except ValueError as e:
             print(self.line, e, flush=True, file=sys.stderr)
 
-    def has_valid_namespace(self):
-        paths = Path(self.resource).parts
-        if len(paths) > 1:
-            namespace = paths[1].lower()
-            return namespace in NAMESPACES
-        return False
-
     def get_namespace(self):
         paths = Path(self.resource).parts
         if len(paths) > 1:
