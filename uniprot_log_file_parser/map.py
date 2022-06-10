@@ -65,11 +65,13 @@ def parse_log_file(log_file_path, out_directory):
                 to_write["DateTime"] = timestamp
                 to_write["Method"] = method
                 to_write["Resource"] = resource
+                to_write["Namespace"] = entry.get_namespace()
                 to_write["Status"] = status
                 to_write["SizeBytes"] = size_bytes
                 to_write["ResponseTime"] = entry.get_response_time()
                 to_write["Referer"] = entry.get_referer()
                 to_write["UserAgentFamily"] = entry.get_user_agent_browser_family()
+                to_write["IP"] = entry.get_ip()
                 lines_to_write.append(to_write)
 
             except Exception as e:

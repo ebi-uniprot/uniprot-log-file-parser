@@ -1,41 +1,11 @@
 #!/usr/bin/env python3
 import re
 from urllib.parse import unquote, parse_qs, urlparse
-from pathlib import PurePosixPath
+from pathlib import Path
 from datetime import datetime
 import pytz
 from user_agents import parse as user_agents_parser
 import sys
-
-
-TOOL_NAMESPACES = {"align", "blast", "peptidesearch", "uploadlists", "mapping"}
-
-DATA_NAMESPACES = {
-    "citations",
-    "database",
-    "diseases",
-    "docs",
-    "program",
-    "help",
-    "keywords",
-    "locations",
-    "proteomes",
-    "sparql",
-    "taxonomy",
-    "uniparc",
-    "uniprot",
-    "uniref",
-    "unirule",
-}
-
-OTHER_NAMESPACES = {
-    "feedback",
-    "downloads",
-    "core",
-    "news",
-}
-
-NAMESPACES = TOOL_NAMESPACES | DATA_NAMESPACES | OTHER_NAMESPACES
 
 
 ENTRY_RE = re.compile(
@@ -201,11 +171,17 @@ class LogEntry:
             print(self.line, e, flush=True, file=sys.stderr)
 
     def has_valid_namespace(self):
-        paths = PurePosixPath(self.resource).parts
+        paths = Path(self.resource).parts
         if len(paths) > 1:
             namespace = paths[1].lower()
             return namespace in NAMESPACES
         return False
+
+    def get_namespace(self):
+        paths = Path(self.resource).parts
+        if len(paths) > 1:
+            return paths[1].lower()
+        return "root"
 
     def get_method_resource(self):
         m = RESOURCE_RE.match(self.resource)
@@ -218,4 +194,3 @@ class LogEntry:
         if self.referer == "-":
             return None
         return self.referer
-
