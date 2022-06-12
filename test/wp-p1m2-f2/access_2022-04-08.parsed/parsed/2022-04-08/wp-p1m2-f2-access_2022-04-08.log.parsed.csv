@@ -1,0 +1,8 @@
+1649376000,GET,/uniprot/Q9MAK9/publications,uniprot,200,72848.0,0.204,,bingbot,11.77.167.61
+1649376001,GET,/uniprot/J7H4F6,uniprot,200,107209.0,0.194,,Linespider,111.92.153.14
+1649376006,GET,"/uniprot/?columns=id,entry+name,reviewed,protein+names,genes,organism,length&fil=organism:""Escherichia+coli+[562]""+AND+proteome:up000298300&offset=25&query=strain:""urmc+180""&sort=length",uniprot,200,266535.0,4.986,"https://www.uniprot.org/uniprot/?columns=id,entry+name,reviewed,protein+names,genes,organism,length&fil=organism:""Escherichia+coli+[562]""+AND+proteome:up000298300&offset=25&query=strain:""urmc+180""&sort=length",IE,11.236.12.206
+1649376006,GET,/uniprot/A0A1E5AML0/protvista,uniprot,200,17514.0,0.031,https://www.uniprot.org/uniprot/A0A1E5AML0/protvista,Safari,11.236.17.66
+1649376006,GET,/blast/?about=Q582B4[542-769]&key=Domain,blast,200,23102.0,0.091,https://www.uniprot.org/blast/?about=Q582B4[542-769]&key=Domain,Safari,11.236.17.223
+1649376006,GET,/uniprot/C7J647,uniprot,301,,0.026,http://www.uniprot.org/uniprot/C7J647,Chrome,11.99.136.132
+1649376006,GET,/uniprot/?query=proteome:UP000318046&format=fasta,uniprot,200,468337.0,27.616,,Other,111.86.94.10
+1641427204,GET,/,root,200,147821.0,0.004,,Python-urllib,11.103.129.13
