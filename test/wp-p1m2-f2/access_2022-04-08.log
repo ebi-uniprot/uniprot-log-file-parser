@@ -11,3 +11,6 @@
 11.103.129.13 - - [06/Jan/2022:00:00:04 +0000] "GET / HTTP/1.1" 200 147821 "-" "Python-urllib/3.9" 0.004 - text/html;charset=UTF-8 77.103.129.13 -
 11.103.129.13 - - [06/Jan/2022:00:00:04 +0000] "GET /foo HTTP/1.1" 200 147821 "-" "Python-urllib/3.9" 0.004 - text/html;charset=UTF-8 77.103.129.13 -
 11.103.129.13 - - [06/Jan/2022:00:00:04 +0000] "GET /blast/ HTTP/1.1" 200 147821 "-" "Python-urllib/3.9" 0.004 - text/html;charset=UTF-8 77.103.129.13 -
+11.103.129.13 - - [06/Jan/2022:00:00:04 +0000] "GET /?query=purl:uniprot/P58753 HTTP/1.1" 200 147821 "-" "Python-urllib/3.9" 0.004 - text/html;charset=UTF-8 77.103.129.13 -
+
+

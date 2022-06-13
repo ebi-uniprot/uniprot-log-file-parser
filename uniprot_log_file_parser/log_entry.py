@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import re
-from urllib.parse import unquote, parse_qs, urlparse
+from urllib.parse import unquote, urlparse
 from pathlib import Path
 from datetime import datetime
 import pytz
@@ -172,10 +172,11 @@ class LogEntry:
 
     @staticmethod
     def get_namespace(resource):
-        p = re.compile(r"^/(?P<namespace>[^\.\s]+?)(/|$)")
-        m = p.match(resource)
-        if m:
-            return m.group("namespace")
+        parsed = urlparse(resource)
+        if len(parsed.path) > 1:
+            path = Path(parsed.path[1:])
+            if len(path.parts):
+                return path.parts[0]
         return "root"
 
     def get_method_resource(self):
