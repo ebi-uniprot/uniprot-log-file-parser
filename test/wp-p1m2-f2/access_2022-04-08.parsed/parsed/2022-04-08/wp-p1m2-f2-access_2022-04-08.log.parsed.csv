@@ -6,3 +6,5 @@
 1649376006,GET,/uniprot/C7J647,uniprot,301,,0.026,http://www.uniprot.org/uniprot/C7J647,Chrome,11.99.136.132
 1649376006,GET,/uniprot/?query=proteome:UP000318046&format=fasta,uniprot,200,468337.0,27.616,,Other,111.86.94.10
 1641427204,GET,/,root,200,147821.0,0.004,,Python-urllib,11.103.129.13
+1641427204,GET,/foo,foo,200,147821.0,0.004,,Python-urllib,11.103.129.13
+1641427204,GET,/blast/,blast,200,147821.0,0.004,,Python-urllib,11.103.129.13
