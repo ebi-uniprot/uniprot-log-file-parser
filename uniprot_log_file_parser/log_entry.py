@@ -170,10 +170,12 @@ class LogEntry:
         except ValueError as e:
             print(self.line, e, flush=True, file=sys.stderr)
 
-    def get_namespace(self):
-        paths = Path(self.resource).parts
-        if len(paths) > 1:
-            return paths[1].lower()
+    @staticmethod
+    def get_namespace(resource):
+        p = re.compile(r"^/(?P<namespace>[^\.\s]+?)(/|$)")
+        m = p.match(resource)
+        if m:
+            return m.group("namespace")
         return "root"
 
     def get_method_resource(self):

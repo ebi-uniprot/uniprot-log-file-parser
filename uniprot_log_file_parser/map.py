@@ -62,7 +62,7 @@ def parse_log_file(log_file_path, out_directory):
                 to_write["DateTime"] = timestamp
                 to_write["Method"] = method
                 to_write["Resource"] = resource
-                to_write["Namespace"] = entry.get_namespace()
+                to_write["Namespace"] = entry.get_namespace(resource)
                 to_write["Status"] = status
                 to_write["SizeBytes"] = size_bytes
                 to_write["ResponseTime"] = entry.get_response_time()
