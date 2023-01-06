@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import re
+import os
 from datetime import datetime
 import clickhouse_connect
 from ua_parser import user_agent_parser
@@ -61,13 +62,38 @@ def main():
     """
     )
 
-    log_file_path = sys.argv[1]
+    client.command(
+        """
+    CREATE TABLE IF NOT EXISTS importedlogs
+    (
+    filepath String,
+    n_lines_skipped Int64,
+    n_total_lines Int64,
+    n_lines_imported Int64
+    )
+    ENGINE = MergeTree()
+    PRIMARY KEY (filepath);
+    """
+    )
+
+    log_file_path = os.path.abspath(sys.argv[1])
+    log_imported_already = client.command(
+        f"SELECT COUNT(*) FROM importedlogs WHERE filepath = '{log_file_path}'"
+    )
+    if log_imported_already:
+        print(f"{log_file_path} imported already", flush=True, file=sys.stderr)
+        return
+
     data = []
+    n_total_lines = 0
+    n_lines_skipped = 0
     with open(log_file_path, encoding="UTF-8") as f:
         for line in f:
+            n_total_lines += 1
             parsed = parse_log_entry(line.strip())
             if not parsed:
                 print("Could not parse:", line, flush=True, file=sys.stderr)
+                n_lines_skipped += 1
                 continue
             row = parsed.groupdict()
             try:
@@ -76,6 +102,8 @@ def main():
                 )
             except Exception as error:
                 print(error, row["datetime"], flush=True, file=sys.stderr)
+                n_lines_skipped += 1
+                continue
             useragentfamily = get_browser_family(row["useragent"])
             row["datetime"] = parsed_datetime
             row["useragentfamily"] = useragentfamily
@@ -88,10 +116,23 @@ def main():
                     flush=True,
                     file=sys.stderr,
                 )
+                n_lines_skipped += 1
+                continue
             data.append([row[c] for c in column_names])
-
-    print(f"Adding {len(data)} rows.")
+    n_lines_imported = len(data)
+    print(f"Adding {n_lines_imported} rows.")
     client.insert("uniprotkb", data, column_names=column_names)
+
+    client.insert(
+        "importedlogs",
+        [[log_file_path, n_lines_skipped, n_total_lines, n_lines_imported]],
+        column_names=[
+            "filepath",
+            "n_lines_skipped",
+            "n_total_lines",
+            "n_lines_imported",
+        ],
+    )
 
 
 if __name__ == "__main__":
