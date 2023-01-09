@@ -14,4 +14,4 @@ bsub \
 -R"select[mem>$mem] rusage[mem=$mem] span[hosts=1]" \
 -oo $out \
 -ee $error \
-./prepare_and_insert_log_wrapper.sh
+./prepare_and_insert_logs_wrapper.sh
