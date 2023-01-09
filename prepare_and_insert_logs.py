@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import sys
 import re
-import os
 from datetime import datetime
 from glob import glob
 import clickhouse_connect
