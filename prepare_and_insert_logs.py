@@ -125,7 +125,7 @@ def prepare_and_insert_log(log_path):
                 continue
             data.append([row[c] for c in column_names])
     n_lines_imported = len(data)
-    print(f"Adding {n_lines_imported} rows.")
+    print(f"{log_path} adding {n_lines_imported} rows.")
     client.insert("uniprotkb", data, column_names=column_names)
 
     client.insert(
