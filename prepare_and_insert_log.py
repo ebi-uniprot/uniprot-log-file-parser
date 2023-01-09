@@ -3,8 +3,14 @@ import sys
 import re
 import os
 from datetime import datetime
+from glob import glob
 import clickhouse_connect
 from ua_parser import user_agent_parser
+
+
+start_date = "2022-08-01"
+end_date = "2022-12-31"
+pattern = "/net/isilonP/public/rw/uniprot/k8s/rest/uniprotkb-rest/rest-app-uniprotkb-prod-*/logs/*.log"
 
 
 def parse_log_entry(entry):
@@ -29,7 +35,7 @@ def parse_bytes(bytes_string):
         return 0
 
 
-def main():
+def prepare_and_insert_log(log_path):
     columns = {
         "datetime": "DateTime",
         "method": "String",
@@ -76,23 +82,22 @@ def main():
     """
     )
 
-    log_file_path = os.path.abspath(sys.argv[1])
     log_imported_already = client.command(
-        f"SELECT COUNT(*) FROM importedlogs WHERE filepath = '{log_file_path}'"
+        f"SELECT COUNT(*) FROM importedlogs WHERE filepath = '{log_path}'"
     )
     if log_imported_already:
-        print(f"{log_file_path} imported already", flush=True, file=sys.stderr)
+        print(log_path, f"{log_path} imported already", flush=True, file=sys.stderr)
         return
 
     data = []
     n_total_lines = 0
     n_lines_skipped = 0
-    with open(log_file_path, encoding="UTF-8") as f:
+    with open(log_path, encoding="UTF-8") as f:
         for line in f:
             n_total_lines += 1
             parsed = parse_log_entry(line.strip())
             if not parsed:
-                print("Could not parse:", line, flush=True, file=sys.stderr)
+                print(log_path, "Could not parse:", line, flush=True, file=sys.stderr)
                 n_lines_skipped += 1
                 continue
             row = parsed.groupdict()
@@ -101,7 +106,7 @@ def main():
                     row["datetime"], "%d/%b/%Y:%H:%M:%S %z"
                 )
             except Exception as error:
-                print(error, row["datetime"], flush=True, file=sys.stderr)
+                print(log_path, error, row["datetime"], flush=True, file=sys.stderr)
                 n_lines_skipped += 1
                 continue
             useragentfamily = get_browser_family(row["useragent"])
@@ -111,6 +116,7 @@ def main():
             missing_column_names = column_names_set - set(row.keys())
             if missing_column_names:
                 print(
+                    log_path,
                     "Missing column names:",
                     missing_column_names,
                     flush=True,
@@ -125,7 +131,7 @@ def main():
 
     client.insert(
         "importedlogs",
-        [[log_file_path, n_lines_skipped, n_total_lines, n_lines_imported]],
+        [[log_path, n_lines_skipped, n_total_lines, n_lines_imported]],
         column_names=[
             "filepath",
             "n_lines_skipped",
@@ -133,6 +139,20 @@ def main():
             "n_lines_imported",
         ],
     )
+
+
+def is_log_in_date_range(path):
+    p = re.compile(r"\.([0-9\-]+)\.log$")
+    m = p.search(path)
+    assert m
+    date = m.groups()[0]
+    return start_date <= date <= end_date
+
+
+def main():
+    for path in glob(pattern):
+        if is_log_in_date_range(path):
+            prepare_and_insert_log(path)
 
 
 if __name__ == "__main__":
