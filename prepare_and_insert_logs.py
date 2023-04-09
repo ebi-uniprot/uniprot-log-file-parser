@@ -6,10 +6,11 @@ from glob import glob
 import clickhouse_connect
 from ua_parser import user_agent_parser
 
+namespace = "idmapping"
 
-start_date = "2022-08-01"
-end_date = "2022-12-31"
-pattern = "/net/isilonP/public/rw/uniprot/k8s/rest/uniprotkb-rest/rest-app-uniprotkb-prod-*/logs/*.log"
+start_date = "2022-07-01"
+end_date = "2024-12-31"
+pattern = f"/Volumes/Developer/logs/{namespace}/*/*.log"
 
 
 def parse_log_entry(entry):
@@ -43,7 +44,6 @@ def prepare_and_insert_log(log_path):
         "bytes": "Int64",
         "referrer": "String",
         "useragent": "String",
-        "useragentfamily": "String",
     }
 
     sql_columns = ",".join(
@@ -57,13 +57,20 @@ def prepare_and_insert_log(log_path):
     )
 
     client.command(
+        """
+    CREATE DATABASE IF NOT EXISTS uniprot;
+    USE uniprot;
+    """
+    )
+
+    client.command(
         f"""
-    CREATE TABLE IF NOT EXISTS uniprotkb
+    CREATE TABLE IF NOT EXISTS {namespace}
     (
     {sql_columns}
     )
     ENGINE = MergeTree()
-    PRIMARY KEY (datetime, status, method, useragentfamily);
+    PRIMARY KEY (datetime, status, method, useragent);
     """
     )
 
@@ -85,7 +92,7 @@ def prepare_and_insert_log(log_path):
         f"SELECT COUNT(*) FROM importedlogs WHERE filepath = '{log_path}'"
     )
     if log_imported_already:
-        print(log_path, f"{log_path} imported already", flush=True, file=sys.stderr)
+        print(f"{log_path} imported already", flush=True, file=sys.stderr)
         return
 
     data = []
@@ -108,9 +115,7 @@ def prepare_and_insert_log(log_path):
                 print(log_path, error, row["datetime"], flush=True, file=sys.stderr)
                 n_lines_skipped += 1
                 continue
-            useragentfamily = get_browser_family(row["useragent"])
             row["datetime"] = parsed_datetime
-            row["useragentfamily"] = useragentfamily
             row["bytes"] = parse_bytes(row["bytes"])
             missing_column_names = column_names_set - set(row.keys())
             if missing_column_names:
@@ -126,8 +131,11 @@ def prepare_and_insert_log(log_path):
             data.append([row[c] for c in column_names])
     n_lines_imported = len(data)
     print(f"{log_path} adding {n_lines_imported} rows.")
-    client.insert("uniprotkb", data, column_names=column_names)
-
+    try:
+        client.insert(namespace, data, column_names=column_names)
+    except Exception as error:
+        print("Failed to insert into clickhouse", error)
+        return
     client.insert(
         "importedlogs",
         [[log_path, n_lines_skipped, n_total_lines, n_lines_imported]],
@@ -149,9 +157,10 @@ def is_log_in_date_range(path):
 
 
 def main():
-    for path in glob(pattern):
-        if is_log_in_date_range(path):
-            prepare_and_insert_log(path)
+    paths = [path for path in glob(pattern) if is_log_in_date_range(path)]
+    for index, path in enumerate(paths):
+        print(f"{index+1}/{len(paths)}")
+        prepare_and_insert_log(path)
 
 
 if __name__ == "__main__":
