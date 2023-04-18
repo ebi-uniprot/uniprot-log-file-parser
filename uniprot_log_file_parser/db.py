@@ -4,6 +4,12 @@ from pandas import DataFrame, read_csv
 from uniprot_log_file_parser.ua import get_browser_family
 
 
+def no_data(df: DataFrame):
+    if not isinstance(df, DataFrame):
+        return True
+    return df.empty
+
+
 def get_db_connection(db_path: str):
     return connect(database=db_path, read_only=False)
 
@@ -17,6 +23,17 @@ def setup_tables(dbc: DuckDBPyConnection, namespace: str):
                 'programmatic',
                 'bot',
                 'unknown'
+            );
+            CREATE TYPE http_method AS ENUM(
+                'GET',
+                'HEAD',
+                'POST',
+                'PUT',
+                'DELETE',
+                'CONNECT',
+                'OPTIONS',
+                'TRACE',
+                'PATCH'
             );
             """
         )
@@ -43,7 +60,7 @@ def setup_tables(dbc: DuckDBPyConnection, namespace: str):
         
         CREATE TABLE IF NOT EXISTS {namespace}(
             datetime TIMESTAMP WITH TIME ZONE,
-            method VARCHAR,
+            method http_method,
             request VARCHAR,
             status USMALLINT,
             bytes UBIGINT,
@@ -53,7 +70,7 @@ def setup_tables(dbc: DuckDBPyConnection, namespace: str):
         );
 
         CREATE TABLE IF NOT EXISTS
-            insertedlogs(
+            log_meta(
                 sha512hash VARCHAR PRIMARY KEY,
                 n_lines_imported UINTEGER,
                 n_lines_skipped UINTEGER
@@ -65,8 +82,10 @@ def setup_tables(dbc: DuckDBPyConnection, namespace: str):
 def insert_log_data(
     dbc: DuckDBPyConnection,
     namespace: str,
-    log_df: DataFrame,  # pylint: disable=unused-argument
+    log_df: DataFrame,
 ):
+    if no_data(log_df):
+        return
     dbc.sql(
         f"""
     INSERT INTO
@@ -94,16 +113,15 @@ def insert_log_meta(
     n_lines_skipped: int,
 ):
     dbc.sql(
-        "INSERT INTO logmeta VALUES "
+        "INSERT INTO log_meta VALUES "
         f"('{sha512hash}', {n_lines_imported}, {n_lines_skipped})"
     )
 
 
 def is_log_already_inserted(dbc: DuckDBPyConnection, sha512hash: str):
-    results = dbc.sql(
-        f"SELECT COUNT(*) FROM insertedlogs WHERE sha512hash = '{sha512hash}'"
-    )
-    return bool(results.fetchall()[0][0])
+    return bool(dbc.sql(
+        f"SELECT sha512hash FROM log_meta WHERE sha512hash = '{sha512hash}'"
+    ))
 
 
 def get_useragent_df(dbc: DuckDBPyConnection):
@@ -115,14 +133,25 @@ def get_useragent_family_df(dbc: DuckDBPyConnection):
 
 
 def update_useragents(dbc: DuckDBPyConnection, useragents_df: DataFrame):
+    if no_data(useragents_df):
+        return
     dbc.sql("INSERT OR IGNORE INTO useragent SELECT * FROM useragents_df")
 
 
 def update_useragent_families(
     dbc: DuckDBPyConnection, useragent_families_df: DataFrame
 ):
+    if no_data(useragent_families_df):
+        return
     dbc.sql(
-        "INSERT OR IGNORE INTO useragent_family SELECT * FROM useragent_families_df"
+        """
+        INSERT OR IGNORE INTO
+            useragent_family
+        SELECT
+            *
+        FROM
+            useragent_families_df
+        """
     )
 
 
@@ -141,6 +170,8 @@ def restore_useragent_family(dbc: DuckDBPyConnection, csv_file: str):
 
 
 def get_unseen_useragent_df(dbc, log_df):
+    if no_data(log_df):
+        return
     result = dbc.sql(
         """
     SELECT DISTINCT
@@ -170,14 +201,16 @@ def get_unseen_useragent_df(dbc, log_df):
 
 
 def get_unseen_useragent_families(dbc, unseen_useragent_df):
+    if no_data(unseen_useragent_df):
+        return
     result = dbc.sql(
         """
     SELECT
         family
     FROM
-        useragent_family
+        unseen_useragent_df
     WHERE
-        family NOT IN (SELECT family FROM unseen_useragent_df)
+        family NOT IN (SELECT family FROM useragent_family)
     """
     ).fetchall()
     if not result:
@@ -185,10 +218,13 @@ def get_unseen_useragent_families(dbc, unseen_useragent_df):
     return {el[0] for el in result}
 
 
-def insert_unseen_useragent_families(dbc, unseen_useragent_families):
-    if not unseen_useragent_families:
+def insert_unseen_useragent_families(
+        dbc: DuckDBPyConnection,
+        unseen_useragent_families: DataFrame):
+    if no_data(unseen_useragent_families):
         return
-    start_id = dbc.sql("SELECT MAX(id) FROM useragent_family").fetchone()[0] + 1
+    start_id = dbc.sql(
+        "SELECT MAX(id) FROM useragent_family").fetchone()[0] + 1
     unseen_useragent_family_items = [
         {
             "id": i,
@@ -202,11 +238,14 @@ def insert_unseen_useragent_families(dbc, unseen_useragent_families):
     update_useragent_families(dbc, unseen_useragent_family_df)
 
 
-def insert_unseen_useragents(dbc, unseen_useragent_df):
-    if not unseen_useragent_df:
+def insert_unseen_useragents(
+        dbc: DuckDBPyConnection,
+        unseen_useragent_df: DataFrame):
+    if no_data(unseen_useragent_df):
         return
     useragent_family_df = get_useragent_family_df(dbc)
-    useragent_family_df = useragent_family_df.rename(columns={"id": "family_id"})
+    useragent_family_df = useragent_family_df.rename(
+        columns={"id": "family_id"})
     merged = unseen_useragent_df.merge(useragent_family_df, on="family")
     merged = merged[["id", "string", "family_id"]]
     update_useragents(dbc, merged)
