@@ -1,0 +1,203 @@
+id,family,type,major
+0,Other,unknown,False
+1,Edge,browser,True
+2,Chrome,browser,True
+3,Mobile Safari,browser,True
+4,Firefox,browser,True
+5,AHC,bot,False
+6,ActionExtension,unknown,False
+7,AdsBot-Google,bot,False
+8,Aloha,unknown,False
+9,Chrome Mobile WebView,browser,True
+10,Android,browser,False
+11,Apache-CXF,programmatic,True
+12,Apache-HttpClient,programmatic,True
+13,AppEngine-Google,programmatic,False
+14,ArchiveTeam ArchiveBot,bot,False
+15,AwarioSmartBot,bot,False
+16,Axel,programmatic,False
+17,Baiduspider,bot,False
+18,BrightEdge Crawler,bot,False
+19,CCBot,bot,False
+20,Googlebot,bot,False
+21,Client,unknown,False
+22,DingTalkBot,bot,False
+23,Download%20Shuttle,unknown,False
+24,DuckDuckBot,bot,False
+25,Python-urllib,programmatic,True
+26,WhatsApp,browser,False
+27,Go-http-client,programmatic,True
+28,curl,programmatic,True
+29,Hammel,unknown,False
+30,DuckDuckGo Mobile,browser,True
+31,com/bot,bot,False
+32,InDigestion,unknown,False
+33,Mobile Safari UI/WKWebView,browser,False
+34,Java,programmatic,True
+35,Jersey,unknown,False
+36,KakaoTalk%20Share%20Extension,unknown,False
+37,libwww-perl,programmatic,True
+38,LinkedInBot,bot,False
+39,Lynx,browser,False
+40,QQ Browser Mobile,browser,True
+41,Sogou web spider,bot,False
+42,Mattermost-Bot,bot,False
+43,Word,unknown,False
+44,Outlook,browser,False
+45,IE,browser,True
+46,Safari,browser,True
+47,Baiduspider-render,bot,False
+48,Opera,browser,True
+49,MyIE2,unknown,False
+50,AOL,browser,False
+51,QQ Browser,browser,True
+52,Lunascape,unknown,False
+53,Chrome Frame,browser,False
+54,Firefox Mobile,browser,True
+55,BlackBerry WebKit,browser,False
+56,Chrome Mobile,browser,True
+57,Opera Mobile,browser,False
+58,Edge Mobile,browser,False
+59,Phantom,programmatic,False
+60,LINE,browser,False
+61,Facebook,bot,False
+62,YandexSearch,bot,False
+63,Samsung Internet,browser,False
+64,Puffin,unknown,False
+65,Yandex Browser,browser,True
+66,Snapchat,browser,False
+67,Whale,browser,False
+68,UC Browser,browser,False
+69,Instagram,browser,False
+70,Crosswalk,browser,False
+71,Tenta Browser,browser,False
+72,Pinterest,browser,False
+73,Amazon Silk,browser,False
+74,Flipboard,browser,False
+75,Bytespider,bot,False
+76,Maxthon,browser,True
+77,PetalBot,bot,False
+78,Google,bot,False
+79,Chromium,browser,False
+80,MiuiBrowser,browser,False
+81,Mint Browser,browser,False
+82,HeadlessChrome,browser,True
+83,SeaMonkey,browser,False
+84,Waterfox,browser,False
+85,Pale Moon,browser,False
+86,Apple Mail,browser,False
+87,FacebookBot,bot,False
+88,Electron,browser,False
+89,Iron,browser,False
+90,Seznam prohlížeč,unknown,False
+91,Applebot,bot,False
+92,Vivaldi,browser,False
+93,Sleipnir,browser,False
+94,WebKit Nightly,browser,False
+95,Nokia Browser,browser,False
+96,PingdomBot,bot,False
+97,Sogou Explorer,browser,True
+98,Coc Coc,unknown,False
+99,Dragon,browser,False
+100,ActiveComplyBot,bot,False
+101,Linespider,bot,False
+102,Yeti,bot,False
+103,Basilisk,browser,False
+104,Thunderbird,browser,False
+105,Mail.ru Chromium Browser,browser,False
+106,BingPreview,bot,False
+107,MsnBot,bot,False
+108,360Spider,bot,False
+109,YisouSpider,bot,False
+110,WindowsPowerShell,programmatic,False
+111,IE Mobile,browser,False
+112,Netscape,browser,False
+113,Firefox (Minefield),browser,False
+114,Altmetribot,bot,False
+115,Arora,browser,False
+116,Kazehakase,browser,False
+117,Konqueror,unknown,False
+118,GooglePlusBot,bot,False
+119,WordPress,bot,False
+120,Bon Echo,browser,False
+121,Epiphany,unknown,False
+122,Firefox Beta,browser,False
+123,SemanticScholarBot,bot,False
+124,Adsbot,bot,False
+125,AhrefsBot,bot,False
+126,BLEXBot,bot,False
+127,crawler,bot,False
+128,net/bot,bot,False
+129,Discordbot,bot,False
+130,DotBot,bot,False
+131,GrapeshotCrawler,bot,False
+132,InfoTigerBot,bot,False
+133,MJ12bot,bot,False
+134,Zune,unknown,False
+135,Neevabot,bot,False
+136,Qwantify,bot,False
+137,Scribdbot,bot,False
+138,SemrushBot,bot,False
+139,SeznamBot,bot,False
+140,SpiderLing,bot,False
+141,; bot,bot,False
+142,YandexAccessibilityBot,bot,False
+143,YandexBot,bot,False
+144,YandexMetrika,unknown,False
+145,archive.org_bot,bot,False
+146,bingbot,bot,False
+147,coccocbot,bot,False
+148,ev-crawler,bot,False
+149,iSec_Bot,bot,False
+150,Web-Crawler,bot,False
+151,Chrome Mobile iOS,browser,True
+152,Firefox iOS,browser,False
+153,CFNetwork,browser,False
+154,YandexMobileBot,bot,False
+155,Opera Mini,browser,False
+156,MobileIron,unknown,False
+157,UptimeRobot,bot,False
+158,NBShareExtension,unknown,False
+159,News,unknown,False
+160,PWA_Store_Scraper,bot,False
+161,PostmanRuntime,programmatic,False
+162,PycURL,programmatic,False
+163,Python aiohttp,programmatic,True
+164,QQ%E6%B5%8F%E8%A7%88%E5%99%A8HD,unknown,False
+165,QQBrowserLite,browser,False
+166,Quora-Bot,bot,False
+167,RepoLookoutBot,bot,False
+168,Riddler,bot,False
+169,SOMENAME Indexer,bot,False
+170,Scrapy,programmatic,True
+171,Scribbr-Citation-Bot,bot,False
+172,Slackbot-LinkExpanding,bot,False
+173,Snap URL Preview Service; bot,bot,False
+174,TelegramBot,bot,False
+175,Twitterbot,bot,False
+176,Chimera,browser,False
+177,UT-Dorkbot,bot,False
+178,Umaka-Crawler,bot,False
+179,UniProtRDF robot,bot,False
+180,Vert.x-WebClient,unknown,False
+181,ViberBot,bot,False
+182,WeChat,browser,False
+183,Wget,programmatic,True
+184,Xenu Link Sleuth,unknown,False
+185,Yoink%20Add%20Extension,unknown,False
+186,akka-http,programmatic,False
+187,aria2,programmatic,True
+188,axios,programmatic,True
+189,bitlybot,bot,False
+190,com.apple.Safari.SearchHelper,browser,False
+191,got,unknown,False
+192,insomnia,browser,False
+193,jpg-newsbot,bot,False
+194,ldspider,bot,False
+195,lua-resty-http,programmatic,False
+196,okhttp,programmatic,False
+197,AccompanyBot,bot,False
+198,Python Requests,programmatic,True
+199,rn3,unknown,False
+200,ureq,programmatic,False
+201,yacybot,bot,False
