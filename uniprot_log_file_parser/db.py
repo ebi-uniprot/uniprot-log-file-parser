@@ -1,5 +1,7 @@
-from duckdb import connect, DuckDBPyConnection, ParserException
+from duckdb import connect, DuckDBPyConnection, CatalogException
 from pandas import DataFrame, read_csv
+
+from uniprot_log_file_parser.ua import get_browser_family
 
 
 def get_db_connection(db_path: str):
@@ -7,8 +9,38 @@ def get_db_connection(db_path: str):
 
 
 def setup_tables(dbc: DuckDBPyConnection, namespace: str):
+    try:
+        dbc.sql(
+            """
+            CREATE TYPE useragent_family_type AS ENUM(
+                'browser',
+                'programmatic',
+                'bot',
+                'unknown'
+            );
+            """
+        )
+    except CatalogException:
+        # useragent_family_type already exists
+        pass
     dbc.sql(
         f"""
+        CREATE TABLE IF NOT EXISTS useragent_family(
+            id INTEGER PRIMARY KEY NOT NULL,
+            family VARCHAR UNIQUE NOT NULL,
+            type useragent_family_type,
+            major BOOLEAN,
+            UNIQUE(id, family, type, major)
+        );
+
+        CREATE TABLE IF NOT EXISTS useragent(
+            id INTEGER PRIMARY KEY NOT NULL,
+            string VARCHAR UNIQUE NOT NULL,
+            family_id INTEGER NOT NULL,
+            FOREIGN KEY(family_id) REFERENCES useragent_family(id),
+            UNIQUE(id, string, family_id)
+        );
+        
         CREATE TABLE IF NOT EXISTS {namespace}(
             datetime TIMESTAMP WITH TIME ZONE,
             method VARCHAR,
@@ -16,12 +48,10 @@ def setup_tables(dbc: DuckDBPyConnection, namespace: str):
             status USMALLINT,
             bytes UBIGINT,
             referrer VARCHAR,
-            useragent_id INTEGER
-        )
-        """
-    )
-    dbc.sql(
-        """
+            useragent_id INTEGER NOT NULL,
+            FOREIGN KEY(useragent_id) REFERENCES useragent(id)
+        );
+
         CREATE TABLE IF NOT EXISTS
             insertedlogs(
                 sha512hash VARCHAR PRIMARY KEY,
@@ -30,45 +60,38 @@ def setup_tables(dbc: DuckDBPyConnection, namespace: str):
             )
         """
     )
-    try:
-        dbc.sql(
-            """
-            CREATE TYPE IF NOT EXISTS useragent_type AS ENUM(
-                'browser',
-                'programmatic',
-                'bot', 'unknown'
-            );
-            """
-        )
-    except ParserException:
-        # useragent_type exists
-        pass
-    dbc.sql(
-        """
-        CREATE TABLE IF NOT EXISTS useragent(
-            string VARCHAR UNIQUE NOT NULL,
-            family VARCHAR NOT NULL,
-            type useragent_type,
-            major BOOLEAN,
-            id INTEGER PRIMARY KEY NOT NULL,
-        )
-        """
-    )
 
 
 def insert_log_data(
     dbc: DuckDBPyConnection,
     namespace: str,
-    log_df: DataFrame  # pylint: disable=unused-argument
+    log_df: DataFrame,  # pylint: disable=unused-argument
 ):
-    dbc.sql(f"INSERT INTO {namespace} SELECT * FROM log_df")
+    dbc.sql(
+        f"""
+    INSERT INTO
+        {namespace}
+    SELECT
+        datetime,
+        method,
+        request,
+        status,
+        bytes,
+        referrer,
+        useragent.id AS useragent_id
+    FROM
+        log_df
+    LEFT JOIN
+        useragent on log_df.useragent = useragent.string
+    """
+    )
 
 
 def insert_log_meta(
     dbc: DuckDBPyConnection,
     sha512hash: str,
     n_lines_imported: int,
-    n_lines_skipped: int
+    n_lines_skipped: int,
 ):
     dbc.sql(
         "INSERT INTO logmeta VALUES "
@@ -83,20 +106,107 @@ def is_log_already_inserted(dbc: DuckDBPyConnection, sha512hash: str):
     return bool(results.fetchall()[0][0])
 
 
-def get_useragents(dbc: DuckDBPyConnection):
+def get_useragent_df(dbc: DuckDBPyConnection):
     return dbc.sql("SELECT * FROM useragent").to_df()
 
 
-def update_useragents(
-    dbc: DuckDBPyConnection,
-    useragents: DataFrame  # pylint: disable=unused-argument
+def get_useragent_family_df(dbc: DuckDBPyConnection):
+    return dbc.sql("SELECT * FROM useragent_family").to_df()
+
+
+def update_useragents(dbc: DuckDBPyConnection, useragents_df: DataFrame):
+    dbc.sql("INSERT OR IGNORE INTO useragent SELECT * FROM useragents_df")
+
+
+def update_useragent_families(
+    dbc: DuckDBPyConnection, useragent_families_df: DataFrame
 ):
-    dbc.sql("INSERT OR IGNORE INTO useragent SELECT * FROM useragents")
+    dbc.sql(
+        "INSERT OR IGNORE INTO useragent_family SELECT * FROM useragent_families_df"
+    )
 
 
 def restore_useragent(dbc: DuckDBPyConnection, csv_file: str):
-    uadf = read_csv(csv_file)
-    uadf['id'] = uadf.index
-    uadf['string'] = uadf['string'].fillna("")
-    uadf["type"] = uadf["type"].astype("category")
-    update_useragents(dbc, uadf)
+    ua_df = read_csv(csv_file)
+    ua_df["string"] = ua_df["string"].fillna("")
+    ua_df["id"] = ua_df.index
+    ua_df = ua_df[["id", "string", "family_id"]]
+    # uadf["type"] = uadf["type"].astype("category")
+    update_useragents(dbc, ua_df)
+
+
+def restore_useragent_family(dbc: DuckDBPyConnection, csv_file: str):
+    uaf_df = read_csv(csv_file)
+    update_useragent_families(dbc, uaf_df)
+
+
+def get_unseen_useragent_df(dbc, log_df):
+    result = dbc.sql(
+        """
+    SELECT DISTINCT
+        useragent
+    FROM
+        log_df
+    WHERE
+        useragent NOT IN (SELECT string FROM useragent)
+    """
+    ).fetchall()
+    if not result:
+        return
+    unseen_useragents = {el[0] for el in result}
+    start_id = dbc.sql("SELECT MAX(id) FROM useragent").fetchone()[0] + 1
+    unseen_useragent_items = [
+        {
+            "string": string,
+            "id": i,
+        }
+        for i, string in enumerate(unseen_useragents, start_id)
+    ]
+    unseen_useragent_df = DataFrame(unseen_useragent_items)
+    unseen_useragent_df["family"] = unseen_useragent_df["string"].apply(
+        get_browser_family
+    )
+    return unseen_useragent_df
+
+
+def get_unseen_useragent_families(dbc, unseen_useragent_df):
+    result = dbc.sql(
+        """
+    SELECT
+        family
+    FROM
+        useragent_family
+    WHERE
+        family NOT IN (SELECT family FROM unseen_useragent_df)
+    """
+    ).fetchall()
+    if not result:
+        return
+    return {el[0] for el in result}
+
+
+def insert_unseen_useragent_families(dbc, unseen_useragent_families):
+    if not unseen_useragent_families:
+        return
+    start_id = dbc.sql("SELECT MAX(id) FROM useragent_family").fetchone()[0] + 1
+    unseen_useragent_family_items = [
+        {
+            "id": i,
+            "family": string,
+        }
+        for i, string in enumerate(unseen_useragent_families, start_id)
+    ]
+    unseen_useragent_family_df = DataFrame(unseen_useragent_family_items)
+    unseen_useragent_family_df["type"] = None
+    unseen_useragent_family_df["major"] = None
+    update_useragent_families(dbc, unseen_useragent_family_df)
+
+
+def insert_unseen_useragents(dbc, unseen_useragent_df):
+    if not unseen_useragent_df:
+        return
+    useragent_family_df = get_useragent_family_df(dbc)
+    useragent_family_df = useragent_family_df.rename(columns={"id": "family_id"})
+    merged = unseen_useragent_df.merge(useragent_family_df, on="family")
+    merged = merged[["id", "string", "family_id"]]
+    update_useragents(dbc, merged)

@@ -6,7 +6,8 @@ from glob import glob
 import hashlib
 import pandas as pd
 from uniprot_log_file_parser.db import (
-    get_dbc_connection,
+    get_db_connection,
+    get_useragent_df,
     insert_log_data,
     insert_log_meta,
     is_log_already_inserted,
@@ -31,13 +32,7 @@ def get_sha512_hash(log_contents):
     return hashlib.sha512(log_contents.encode("utf-8")).hexdigest()
 
 
-def prepare_and_insert_log_file(namespace, dbc, log_path):
-    with open(log_path, encoding="utf-8") as file:
-        log_contents = file.read()
-    sha512_hash = get_sha512_hash(log_contents)
-    if is_log_already_inserted(dbc, sha512_hash):
-        print(f"{log_path} imported already", flush=True, file=sys.stderr)
-        return
+def get_log_data_frame(log_contents, log_path):
     data = []
     n_lines_skipped = 0
     for line in log_contents.splitlines():
@@ -45,15 +40,30 @@ def prepare_and_insert_log_file(namespace, dbc, log_path):
         if parsed:
             data.append(parsed)
         else:
-            print(log_path, "Could not parse:",
-                  line, flush=True, file=sys.stderr)
+            print(log_path, "Could not parse:", line, flush=True, file=sys.stderr)
             n_lines_skipped += 1
     log_df = pd.DataFrame(data)
     log_df["status"] = pd.to_numeric(log_df["status"])
     log_df.loc[log_df["bytes"] == "-", "bytes"] = "0"
     log_df["bytes"] = pd.to_numeric(log_df["bytes"])
     log_df["datetime"] = pd.to_datetime(
-        log_df["datetime"], format="%d/%b/%Y:%H:%M:%S %z")
+        log_df["datetime"], format="%d/%b/%Y:%H:%M:%S %z"
+    )
+    return log_df, n_lines_skipped
+
+
+def merge_useragents(dbc, log_df):
+    useragents = get_useragent_df(dbc)
+
+
+def parse_and_insert_log_file(namespace, dbc, log_path):
+    with open(log_path, encoding="utf-8") as file:
+        log_contents = file.read()
+        sha512_hash = get_sha512_hash(log_contents)
+        if is_log_already_inserted(dbc, sha512_hash):
+            print(f"{log_path} imported already", flush=True, file=sys.stderr)
+            return
+    log_df, n_lines_skipped = get_log_data_frame(log_contents, log_path)
     n_lines_imported = len(log_df)
     print(f"Attempting to add {n_lines_imported} rows from {log_path}")
     insert_log_data(dbc, namespace, log_df)
@@ -71,9 +81,7 @@ def is_log_in_date_range(log_path: str):
 def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "namespace",
-        type=str,
-        help="The namespace of the log file eg uniprotkb"
+        "namespace", type=str, help="The namespace of the log file eg uniprotkb"
     )
     parser.add_argument(
         "log_glob",
@@ -95,12 +103,13 @@ def get_log_paths(log_glob: str):
 
 def main():
     namespace, log_glob, db_path = get_arguments()
-    dbc = get_dbc_connection(db_path)
+    dbc = get_db_connection(db_path)
     setup_tables(dbc, namespace)
 
     paths = get_log_paths(log_glob)
     for index, path in enumerate(paths, 1):
         print(f"{index}/{len(paths)}")
+
         prepare_and_insert_log_file(namespace, dbc, path)
 
 
