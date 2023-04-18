@@ -7,9 +7,12 @@ import hashlib
 import pandas as pd
 from uniprot_log_file_parser.db import (
     get_db_connection,
-    get_useragent_df,
+    get_unseen_useragent_df,
+    get_unseen_useragent_families,
     insert_log_data,
     insert_log_meta,
+    insert_unseen_useragent_families,
+    insert_unseen_useragents,
     is_log_already_inserted,
     setup_tables,
 )
@@ -40,7 +43,8 @@ def get_log_data_frame(log_contents, log_path):
         if parsed:
             data.append(parsed)
         else:
-            print(log_path, "Could not parse:", line, flush=True, file=sys.stderr)
+            print(log_path, "Could not parse:",
+                  line, flush=True, file=sys.stderr)
             n_lines_skipped += 1
     log_df = pd.DataFrame(data)
     log_df["status"] = pd.to_numeric(log_df["status"])
@@ -52,10 +56,6 @@ def get_log_data_frame(log_contents, log_path):
     return log_df, n_lines_skipped
 
 
-def merge_useragents(dbc, log_df):
-    useragents = get_useragent_df(dbc)
-
-
 def parse_and_insert_log_file(namespace, dbc, log_path):
     with open(log_path, encoding="utf-8") as file:
         log_contents = file.read()
@@ -64,10 +64,15 @@ def parse_and_insert_log_file(namespace, dbc, log_path):
             print(f"{log_path} imported already", flush=True, file=sys.stderr)
             return
     log_df, n_lines_skipped = get_log_data_frame(log_contents, log_path)
-    n_lines_imported = len(log_df)
-    print(f"Attempting to add {n_lines_imported} rows from {log_path}")
+    n_lines_parsed = len(log_df)
+    print(f"Attempting to add {n_lines_parsed} rows from {log_path}")
+    unseen_useragent_df = get_unseen_useragent_df(dbc, log_df)
+    unseen_useragent_families = get_unseen_useragent_families(
+        dbc, unseen_useragent_df)
+    insert_unseen_useragent_families(dbc, unseen_useragent_families)
+    insert_unseen_useragents(dbc, unseen_useragent_df)
     insert_log_data(dbc, namespace, log_df)
-    insert_log_meta(dbc, sha512_hash, n_lines_imported, n_lines_skipped)
+    insert_log_meta(dbc, sha512_hash, n_lines_parsed, n_lines_skipped)
 
 
 def is_log_in_date_range(log_path: str):
@@ -81,7 +86,9 @@ def is_log_in_date_range(log_path: str):
 def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "namespace", type=str, help="The namespace of the log file eg uniprotkb"
+        "namespace",
+        type=str,
+        help="The namespace of the log file eg uniprotkb"
     )
     parser.add_argument(
         "log_glob",
@@ -94,7 +101,7 @@ def get_arguments():
         help="The path to the Duckdbc file to hold the parsed log data",
     )
     args = parser.parse_args()
-    return args.namepsace, args.log_glob, args.db_path
+    return args.namespace, args.log_glob, args.db_path
 
 
 def get_log_paths(log_glob: str):
@@ -109,8 +116,7 @@ def main():
     paths = get_log_paths(log_glob)
     for index, path in enumerate(paths, 1):
         print(f"{index}/{len(paths)}")
-
-        prepare_and_insert_log_file(namespace, dbc, path)
+        parse_and_insert_log_file(namespace, dbc, path)
 
 
 if __name__ == "__main__":
