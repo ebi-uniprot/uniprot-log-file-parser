@@ -26,7 +26,8 @@ END_DATE = date.today().strftime('%Y-%m-%d')
 
 def parse_log_line(line: str):
     pattern = re.compile(
-        r"^\S+ \S+ \S+ \[(?P<datetime>[^\]]+)\] \"(?P<method>[A-Z]+) "
+        r"^\S+ \S+ \S+ \[(?P<datetime>[^\]]+)\] \""
+        r"(?P<method>(GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE|PATCH|)) "
         r"(?P<request>[^ \"]+)? HTTP/[0-9.]+\" (?P<status>[0-9]{3}) "
         r"(?P<bytes>[0-9]+|-) \"(?P<referrer>[^\"]*)\" \"(?P<useragent>.*)\""
     )
@@ -136,6 +137,7 @@ def main():
         parse_and_insert_log_file(namespace, dbc, path)
 
     dbc.close()
+
 
 if __name__ == "__main__":
     main()
