@@ -10,8 +10,7 @@
 - [ ] Rewrite merges to use duckdb
 - [ ] Store:
   - [x] Daily total number of requests
-  - [ ] Daily total number of bytes
+  - [x] Daily total number of bytes
   - [x] 200s, 400s, 500s etc
 - [x] Create as a CLI
-- [ ] Create a backup script to save as gzipped csv
-- [ ] Exclude kube liveness probes & health checks
+- [x] Create a backup script to save as gzipped csv
