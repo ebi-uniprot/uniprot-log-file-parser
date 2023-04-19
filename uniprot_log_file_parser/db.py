@@ -268,7 +268,7 @@ def insert_unseen_useragents(
     update_useragents(dbc, merged)
 
 
-def backup_all(dbc: DuckDBPyConnection, dest_dir: str):
+def backup_database(dbc: DuckDBPyConnection, dest_dir: str):
     dbc.sql(
         f"""
         EXPORT DATABASE '{dest_dir}' (FORMAT CSV, HEADER 1, COMPRESSION GZIP)
