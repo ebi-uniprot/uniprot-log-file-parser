@@ -4,7 +4,7 @@ import sys
 import re
 from glob import glob
 from collections import defaultdict
-from datetime import timedelta
+from datetime import timedelta, date
 import hashlib
 import pandas as pd
 from uniprot_log_file_parser.db import (
@@ -20,6 +20,7 @@ from uniprot_log_file_parser.db import (
 )
 
 START_DATE = "2022-07-01"
+END_DATE = date.today().strftime('%Y-%m-%d')
 
 
 def parse_log_line(line: str):
@@ -83,9 +84,9 @@ def parse_and_insert_log_file(namespace, dbc, log_path):
     insert_unseen_useragents(dbc, unseen_useragent_df)
     status_counts = get_status_counts(log_df)
     insert_log_data(dbc, namespace, log_df)
-    date = (log_df.iloc[0]['datetime'] + timedelta(hours=6)).date()
+    log_date = (log_df.iloc[0]['datetime'] + timedelta(hours=6)).date()
     total_bytes = sum(log_df['bytes'])
-    insert_log_meta(dbc, date, sha512_hash, total_bytes,
+    insert_log_meta(dbc, log_date, sha512_hash, total_bytes,
                     n_lines_parsed, n_lines_skipped, status_counts)
 
 
@@ -93,8 +94,8 @@ def is_log_in_date_range(log_path: str):
     log_pattern = re.compile(r"\.([0-9\-]+)\.log$")
     match = log_pattern.search(log_path)
     assert match
-    date = match.groups()[0]
-    return START_DATE <= date
+    log_date = match.groups()[0]
+    return START_DATE <= log_date < END_DATE
 
 
 def get_arguments():

@@ -269,6 +269,7 @@ def insert_unseen_useragents(
 
 
 def backup_database(dbc: DuckDBPyConnection, dest_dir: str):
+    # TODO: The files generated with this don't have a .gz suffix. Submit a issue.
     dbc.sql(
         f"""
         EXPORT DATABASE '{dest_dir}' (FORMAT CSV, HEADER 1, COMPRESSION GZIP)
