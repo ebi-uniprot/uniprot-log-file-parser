@@ -72,6 +72,7 @@ def setup_tables(dbc: DuckDBPyConnection, namespace: str):
         );
 
         CREATE TABLE IF NOT EXISTS log_meta(
+            path VARCHAR NOT NULL,
             date DATE NOT NULL,
             sha512hash VARCHAR PRIMARY KEY,
             bytes UBIGINT,
@@ -116,6 +117,7 @@ def insert_log_data(
 
 def insert_log_meta(
     dbc: DuckDBPyConnection,
+    log_path: str,
     date: datetime.date,
     sha512hash: str,
     total_bytes: int,
@@ -124,6 +126,7 @@ def insert_log_meta(
     status_counts: defaultdict
 ):
     data = [
+        f"'{log_path}'",
         f"'{date}'",
         f"'{sha512hash}'",
         total_bytes,

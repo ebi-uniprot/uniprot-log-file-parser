@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os.path
 import argparse
 import sys
 import re
@@ -86,7 +87,8 @@ def parse_and_insert_log_file(namespace, dbc, log_path):
     insert_log_data(dbc, namespace, log_df)
     log_date = (log_df.iloc[0]['datetime'] + timedelta(hours=6)).date()
     total_bytes = sum(log_df['bytes'])
-    insert_log_meta(dbc, log_date, sha512_hash, total_bytes,
+    abs_log_path = os.path.abspath(log_path)
+    insert_log_meta(dbc, abs_log_path, log_date, sha512_hash, total_bytes,
                     n_lines_parsed, n_lines_skipped, status_counts)
 
 
