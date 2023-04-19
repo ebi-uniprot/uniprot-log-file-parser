@@ -84,7 +84,8 @@ def parse_and_insert_log_file(namespace, dbc, log_path):
     status_counts = get_status_counts(log_df)
     insert_log_data(dbc, namespace, log_df)
     date = (log_df.iloc[0]['datetime'] + timedelta(hours=6)).date()
-    insert_log_meta(dbc, date, sha512_hash,
+    total_bytes = sum(log_df['bytes'])
+    insert_log_meta(dbc, date, sha512_hash, total_bytes,
                     n_lines_parsed, n_lines_skipped, status_counts)
 
 

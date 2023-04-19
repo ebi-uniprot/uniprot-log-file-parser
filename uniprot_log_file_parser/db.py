@@ -74,6 +74,7 @@ def setup_tables(dbc: DuckDBPyConnection, namespace: str):
         CREATE TABLE IF NOT EXISTS log_meta(
             date DATE NOT NULL,
             sha512hash VARCHAR PRIMARY KEY,
+            bytes UBIGINT,
             lines_imported UINTEGER NOT NULL,
             lines_skipped UINTEGER NOT NULL,
             status_1xx UINTEGER NOT NULL,
@@ -117,11 +118,17 @@ def insert_log_meta(
     dbc: DuckDBPyConnection,
     date: datetime.date,
     sha512hash: str,
-    n_lines_imported: int,
-    n_lines_skipped: int,
+    total_bytes: int,
+    lines_imported: int,
+    lines_skipped: int,
     status_counts: defaultdict
 ):
-    data = [f"'{date}'", f"'{sha512hash}'", n_lines_imported, n_lines_skipped] + \
+    data = [
+        f"'{date}'",
+        f"'{sha512hash}'",
+        total_bytes,
+        lines_imported,
+        lines_skipped] + \
         [status_counts[f"status_{s}xx"] for s in range(1, 6)]
     dbc.sql(
         f"INSERT INTO log_meta VALUES ({','.join([str(el) for el in data])})"
