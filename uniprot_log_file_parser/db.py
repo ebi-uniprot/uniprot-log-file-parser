@@ -1,3 +1,5 @@
+import datetime
+from collections import defaultdict
 from duckdb import connect, DuckDBPyConnection, CatalogException
 from pandas import DataFrame, read_csv
 
@@ -60,21 +62,26 @@ def setup_tables(dbc: DuckDBPyConnection, namespace: str):
         
         CREATE TABLE IF NOT EXISTS {namespace}(
             datetime TIMESTAMP WITH TIME ZONE,
-            method http_method,
-            request VARCHAR,
-            status USMALLINT,
-            bytes UBIGINT,
+            method http_method NOT NULL,
+            request VARCHAR NOT NULL,
+            status USMALLINT NOT NULL,
+            bytes UBIGINT NOT NULL,
             referrer VARCHAR,
             useragent_id INTEGER NOT NULL,
             FOREIGN KEY(useragent_id) REFERENCES useragent(id)
         );
 
-        CREATE TABLE IF NOT EXISTS
-            log_meta(
-                sha512hash VARCHAR PRIMARY KEY,
-                n_lines_imported UINTEGER,
-                n_lines_skipped UINTEGER
-            )
+        CREATE TABLE IF NOT EXISTS log_meta(
+            date DATE NOT NULL,
+            sha512hash VARCHAR PRIMARY KEY,
+            lines_imported UINTEGER NOT NULL,
+            lines_skipped UINTEGER NOT NULL,
+            status_1xx UINTEGER NOT NULL,
+            status_2xx UINTEGER NOT NULL,
+            status_3xx UINTEGER NOT NULL,
+            status_4xx UINTEGER NOT NULL,
+            status_5xx UINTEGER NOT NULL
+        );
         """
     )
 
@@ -108,13 +115,16 @@ def insert_log_data(
 
 def insert_log_meta(
     dbc: DuckDBPyConnection,
+    date: datetime.date,
     sha512hash: str,
     n_lines_imported: int,
     n_lines_skipped: int,
+    status_counts: defaultdict
 ):
+    data = [f"'{date}'", f"'{sha512hash}'", n_lines_imported, n_lines_skipped] + \
+        [status_counts[f"status_{s}xx"] for s in range(1, 6)]
     dbc.sql(
-        "INSERT INTO log_meta VALUES "
-        f"('{sha512hash}', {n_lines_imported}, {n_lines_skipped})"
+        f"INSERT INTO log_meta VALUES ({','.join([str(el) for el in data])})"
     )
 
 
@@ -205,7 +215,7 @@ def get_unseen_useragent_families(dbc, unseen_useragent_df):
         return
     result = dbc.sql(
         """
-    SELECT
+    SELECT DISTINCT
         family
     FROM
         unseen_useragent_df
@@ -215,13 +225,13 @@ def get_unseen_useragent_families(dbc, unseen_useragent_df):
     ).fetchall()
     if not result:
         return
-    return {el[0] for el in result}
+    return [el[0] for el in result]
 
 
 def insert_unseen_useragent_families(
         dbc: DuckDBPyConnection,
-        unseen_useragent_families: DataFrame):
-    if no_data(unseen_useragent_families):
+        unseen_useragent_families: list[str]):
+    if not unseen_useragent_families:
         return
     start_id = dbc.sql(
         "SELECT MAX(id) FROM useragent_family").fetchone()[0] + 1

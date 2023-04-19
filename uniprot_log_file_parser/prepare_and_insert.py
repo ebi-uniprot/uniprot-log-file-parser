@@ -3,6 +3,8 @@ import argparse
 import sys
 import re
 from glob import glob
+from collections import defaultdict
+from datetime import timedelta
 import hashlib
 import pandas as pd
 from uniprot_log_file_parser.db import (
@@ -56,6 +58,14 @@ def get_log_data_frame(log_contents, log_path):
     return log_df, n_lines_skipped
 
 
+def get_status_counts(log_df):
+    status_counts = defaultdict(int)
+    for status, count in log_df.status.value_counts().items():
+        k = f"status_{str(status)[0]}xx"
+        status_counts[k] += count
+    return status_counts
+
+
 def parse_and_insert_log_file(namespace, dbc, log_path):
     with open(log_path, encoding="utf-8") as file:
         log_contents = file.read()
@@ -71,8 +81,11 @@ def parse_and_insert_log_file(namespace, dbc, log_path):
         dbc, unseen_useragent_df)
     insert_unseen_useragent_families(dbc, unseen_useragent_families)
     insert_unseen_useragents(dbc, unseen_useragent_df)
+    status_counts = get_status_counts(log_df)
     insert_log_data(dbc, namespace, log_df)
-    insert_log_meta(dbc, sha512_hash, n_lines_parsed, n_lines_skipped)
+    date = (log_df.iloc[0]['datetime'] + timedelta(hours=6)).date()
+    insert_log_meta(dbc, date, sha512_hash,
+                    n_lines_parsed, n_lines_skipped, status_counts)
 
 
 def is_log_in_date_range(log_path: str):
