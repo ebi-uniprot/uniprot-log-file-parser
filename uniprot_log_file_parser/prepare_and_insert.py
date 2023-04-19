@@ -135,6 +135,7 @@ def main():
         print(f"{index}/{len(paths)}")
         parse_and_insert_log_file(namespace, dbc, path)
 
+    dbc.close()
 
 if __name__ == "__main__":
     main()
