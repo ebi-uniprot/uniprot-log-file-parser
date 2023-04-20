@@ -152,7 +152,10 @@ def main():
     paths = get_log_paths(log_glob)
     for index, path in enumerate(paths, 1):
         print(f"{index}/{len(paths)}")
-        parse_and_insert_log_file(namespace, dbc, path)
+        try:
+            parse_and_insert_log_file(namespace, dbc, path)
+        except Exception as e:
+            print(path, "Could not insert due to exception:\n", e, flush=True, file=sys.stderr)
 
     dbc.close()
 
