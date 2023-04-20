@@ -127,12 +127,14 @@ def get_arguments():
     parser.add_argument(
         "--memory_limit",
         type=str,
+        nargs=1,
         const="4GB",
         help="Maximum amount of memory reserved for DuckDB. Defaults to 4GB.",
     )
     parser.add_argument(
         "--threads",
         type=int,
+        nargs=1,
         const="1",
         help="Number of threads reserved for DuckDB. Defaults to 1.",
     )
