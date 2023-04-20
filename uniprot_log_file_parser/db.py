@@ -20,6 +20,10 @@ def set_db_memory_limit(dbc: DuckDBPyConnection, memory_limit: int):
     dbc.sql(f"SET memory_limit='{memory_limit}'")
 
 
+def set_db_threads(dbc: DuckDBPyConnection, threads: int):
+    dbc.sql(f"SET threads='{threads}'")
+
+
 def setup_tables(dbc: DuckDBPyConnection, namespace: str):
     try:
         dbc.sql(
@@ -63,7 +67,7 @@ def setup_tables(dbc: DuckDBPyConnection, namespace: str):
             FOREIGN KEY(family_id) REFERENCES useragent_family(id),
             UNIQUE(id, string, family_id)
         );
-        
+
         CREATE TABLE IF NOT EXISTS {namespace}(
             datetime TIMESTAMP WITH TIME ZONE,
             method http_method NOT NULL,

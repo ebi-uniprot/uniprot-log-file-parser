@@ -1,12 +1,28 @@
 #!/bin/bash
 
+# The shebang above must be present.
+# Run this with:
+#   sbatch submit_parse_and_insert_logs.batch
+
+# Allocate run time for the job
 #SBATCH -t 10:00:00
-#SBATCH -c 1
+
+# Allocate 1 CPU
+#SBATCH -c 2
+
+# Set the partition (queue in LSF)
 #SBATCH -p datamover
+
+# Allocate memory
 #SBATCH --mem=32G
+
+# Change working directory
 #SBATCH --chdir=/homes/dlrice/uniprot-log-file-parser
 
+# Actual command to run in the job
 python -m uniprot_log_file_parser.prepare_and_insert \
-uniprotkb \
-'/nfs/public/rw/uniprot/k8s/rest/uniprotkb-rest/rest-app-uniprotkb-prod-*/logs/access_log.*.log' \
-/hps/nobackup/martin/uniprot/users/dlrice/rest-api.duckdb
+--namespace uniprotkb \
+--log_glob '/nfs/public/rw/uniprot/k8s/rest/uniprotkb-rest/rest-app-uniprotkb-prod-*/logs/access_log.*.log' \
+--db_path /hps/nobackup/martin/uniprot/users/dlrice/rest-api.duckdb \
+--memory_limit 16GB \
+--threads 2

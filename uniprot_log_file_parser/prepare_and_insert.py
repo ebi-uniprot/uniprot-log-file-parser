@@ -18,6 +18,7 @@ from uniprot_log_file_parser.db import (
     insert_unseen_useragents,
     is_log_already_inserted,
     set_db_memory_limit,
+    set_db_threads,
     setup_tables,
 )
 
@@ -80,8 +81,7 @@ def parse_and_insert_log_file(namespace, dbc, log_path):
     n_lines_parsed = len(log_df)
     print(f"Attempting to add {n_lines_parsed} rows from {log_path}")
     unseen_useragent_df = get_unseen_useragent_df(dbc, log_df)
-    unseen_useragent_families = get_unseen_useragent_families(
-        dbc, unseen_useragent_df)
+    unseen_useragent_families = get_unseen_useragent_families(dbc, unseen_useragent_df)
     insert_unseen_useragent_families(dbc, unseen_useragent_families)
     insert_unseen_useragents(dbc, unseen_useragent_df)
     status_counts = get_status_counts(log_df)
@@ -112,9 +112,7 @@ def is_log_in_date_range(log_path: str):
 def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--namespace",
-        type=str,
-        help="The namespace of the log file eg uniprotkb"
+        "--namespace", type=str, help="The namespace of the log file eg uniprotkb"
     )
     parser.add_argument(
         "--log_glob",
@@ -129,12 +127,17 @@ def get_arguments():
     parser.add_argument(
         "--memory_limit",
         type=str,
-        nargs="?",
         const="4GB",
         help="Maximum amount of memory reserved for DuckDB. Defaults to 4GB.",
     )
+    parser.add_argument(
+        "--threads",
+        type=int,
+        const="1",
+        help="Number of threads reserved for DuckDB. Defaults to 1.",
+    )
     args = parser.parse_args()
-    return args.namespace, args.log_glob, args.db_path, args.memory_limit
+    return args.namespace, args.log_glob, args.db_path, args.memory_limit, args.threads
 
 
 def get_log_paths(log_glob: str):
@@ -142,9 +145,10 @@ def get_log_paths(log_glob: str):
 
 
 def main():
-    namespace, log_glob, db_path, memory_limit = get_arguments()
+    namespace, log_glob, db_path, memory_limit, threads = get_arguments()
     dbc = get_db_connection(db_path)
     set_db_memory_limit(dbc, memory_limit)
+    set_db_threads(dbc, threads)
     setup_tables(dbc, namespace)
 
     paths = get_log_paths(log_glob)
