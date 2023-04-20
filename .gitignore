@@ -1,3 +1,7 @@
+*.duckdb
+*.duckdb.*
+archive/
+
 .DS_Store
 out/
 .vscode/
