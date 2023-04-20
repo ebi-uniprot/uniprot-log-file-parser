@@ -17,11 +17,12 @@ from uniprot_log_file_parser.db import (
     insert_unseen_useragent_families,
     insert_unseen_useragents,
     is_log_already_inserted,
+    set_db_memory_limit,
     setup_tables,
 )
 
 START_DATE = "2022-07-01"
-END_DATE = date.today().strftime('%Y-%m-%d')
+END_DATE = date.today().strftime("%Y-%m-%d")
 
 
 def parse_log_line(line: str):
@@ -48,8 +49,7 @@ def get_log_data_frame(log_contents, log_path):
         if parsed:
             data.append(parsed)
         else:
-            print(log_path, "Could not parse:",
-                  line, flush=True, file=sys.stderr)
+            print(log_path, "Could not parse:", line, flush=True, file=sys.stderr)
             n_lines_skipped += 1
     log_df = pd.DataFrame(data)
     log_df["status"] = pd.to_numeric(log_df["status"])
@@ -86,11 +86,19 @@ def parse_and_insert_log_file(namespace, dbc, log_path):
     insert_unseen_useragents(dbc, unseen_useragent_df)
     status_counts = get_status_counts(log_df)
     insert_log_data(dbc, namespace, log_df)
-    log_date = (log_df.iloc[0]['datetime'] + timedelta(hours=6)).date()
-    total_bytes = sum(log_df['bytes'])
+    log_date = (log_df.iloc[0]["datetime"] + timedelta(hours=6)).date()
+    total_bytes = sum(log_df["bytes"])
     abs_log_path = os.path.abspath(log_path)
-    insert_log_meta(dbc, abs_log_path, log_date, sha512_hash, total_bytes,
-                    n_lines_parsed, n_lines_skipped, status_counts)
+    insert_log_meta(
+        dbc,
+        abs_log_path,
+        log_date,
+        sha512_hash,
+        total_bytes,
+        n_lines_parsed,
+        n_lines_skipped,
+        status_counts,
+    )
 
 
 def is_log_in_date_range(log_path: str):
@@ -104,22 +112,29 @@ def is_log_in_date_range(log_path: str):
 def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "namespace",
+        "--namespace",
         type=str,
         help="The namespace of the log file eg uniprotkb"
     )
     parser.add_argument(
-        "log_glob",
+        "--log_glob",
         type=str,
         help="A glob pattern for all of the log files to be parsed",
     )
     parser.add_argument(
-        "db_path",
+        "--db_path",
         type=str,
         help="The path to the Duckdbc file to hold the parsed log data",
     )
+    parser.add_argument(
+        "--memory_limit",
+        type=str,
+        nargs="?",
+        const="4GB",
+        help="Maximum amount of memory reserved for DuckDB. Defaults to 4GB.",
+    )
     args = parser.parse_args()
-    return args.namespace, args.log_glob, args.db_path
+    return args.namespace, args.log_glob, args.db_path, args.memory_limit
 
 
 def get_log_paths(log_glob: str):
@@ -127,8 +142,9 @@ def get_log_paths(log_glob: str):
 
 
 def main():
-    namespace, log_glob, db_path = get_arguments()
+    namespace, log_glob, db_path, memory_limit = get_arguments()
     dbc = get_db_connection(db_path)
+    set_db_memory_limit(dbc, memory_limit)
     setup_tables(dbc, namespace)
 
     paths = get_log_paths(log_glob)
