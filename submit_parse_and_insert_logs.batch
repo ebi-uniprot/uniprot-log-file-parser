@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#SBATCH -t 10:00:00
+#SBATCH -c 1
+#SBATCH -p datamover
+#SBATCH --mem=32G
+#SBATCH --chdir=/homes/dlrice/uniprot-log-file-parser
+
+python -m uniprot_log_file_parser.prepare_and_insert \
+uniprotkb \
+'/nfs/public/rw/uniprot/k8s/rest/uniprotkb-rest/rest-app-uniprotkb-prod-*/logs/access_log.*.log' \
+/hps/nobackup/martin/uniprot/users/dlrice/rest-api.duckdb
