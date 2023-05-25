@@ -30,7 +30,7 @@ def parse_log_line(line: str):
     pattern = re.compile(
         r"^\S+ \S+ \S+ \[(?P<datetime>[^\]]+)\] \""
         r"(?P<method>(GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE|PATCH|)) "
-        r"(?P<request>[^ \"]+)? HTTP/[0-9.]+\" (?P<status>[0-9]{3}) "
+        r"(?P<request>[^\"]+)? HTTP/[0-9.]+\" (?P<status>[0-9]{3}) "
         r"(?P<bytes>[0-9]+|-) \"(?P<referrer>[^\"]*)\" \"(?P<useragent>.*)\""
     )
     match = pattern.match(line.strip())
@@ -155,7 +155,13 @@ def main():
         try:
             parse_and_insert_log_file(namespace, dbc, path)
         except Exception as e:
-            print(path, "Could not insert due to exception:\n", e, flush=True, file=sys.stderr)
+            print(
+                path,
+                "Could not insert due to exception:\n",
+                e,
+                flush=True,
+                file=sys.stderr,
+            )
 
     dbc.close()
 
