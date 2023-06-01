@@ -123,7 +123,7 @@ def parse_and_save_log_as_parquets(
         return
     df_log, n_lines_skipped = get_log_data_frame(log_path)
     n_lines_parsed = len(df_log)
-    print(f"Attempting to add {n_lines_parsed} rows from {log_path}")
+    print(f"Attempting to save {n_lines_parsed} rows from {log_path}")
     save_parquets_by_date(df_log, out_dir_namespace)
     status_counts = get_status_counts(df_log)
     total_bytes = sum(df_log["bytes"])
@@ -202,8 +202,9 @@ def main():
             parse_and_save_log_as_parquets(out_dir, namespace, dbc, meta_path, path)
         except Exception as e:
             print(
+                "Could not save due to exception:\n",
                 path,
-                "Could not insert due to exception:\n",
+                "\n",
                 e,
                 flush=True,
                 file=sys.stderr,
