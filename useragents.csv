@@ -1,0 +1,203 @@
+family,type
+curl,programmatic
+Python Requests,programmatic
+Wget,programmatic
+Chrome,browser
+Other,unknown
+Python-urllib,programmatic
+Edge,browser
+Googlebot,bot
+Applebot,bot
+YandexBot,bot
+Firefox,browser
+bingbot,bot
+Baiduspider-render,bot
+Safari,browser
+Java,programmatic
+Python aiohttp,programmatic
+libwww-perl,programmatic
+BingPreview,bot
+Yeti,bot
+Linespider,bot
+AhrefsBot,bot
+Scrapy,programmatic
+Chrome Mobile,browser
+Apache-CXF,programmatic
+Sogou Explorer,browser
+Apache-HttpClient,programmatic
+HeadlessChrome,browser
+Mobile Safari,browser
+QQ Browser,browser
+Opera,browser
+UniProtRDF robot,bot
+PetalBot,bot
+IE,browser
+aria2,programmatic
+Maxthon,browser
+axios,programmatic
+Chrome Mobile WebView,browser
+Bytespider,bot
+Chrome Mobile iOS,browser
+Yandex Browser,browser
+SemrushBot,bot
+Electron,browser
+Samsung Internet,browser
+Baiduspider,bot
+Whale,browser
+Google,bot
+Mobile Safari UI/WKWebView,browser
+Go-http-client,programmatic
+QQ Browser Mobile,browser
+Firefox Mobile,browser
+DuckDuckGo Mobile,browser
+Amazon Silk,browser
+AHC,bot
+UC Browser,browser
+Edge Mobile,browser
+YandexMobileBot,bot
+WindowsPowerShell,programmatic
+Opera Mobile,browser
+Qwantify,bot
+PostmanRuntime,programmatic
+Apple Mail,browser
+MiuiBrowser,browser
+MJ12bot,bot
+YandexAccessibilityBot,bot
+net/bot,bot
+Sogou web spider,bot
+Web-Crawler,bot
+Firefox iOS,browser
+YisouSpider,bot
+Neevabot,bot
+Android,browser
+Arora,browser
+Kazehakase,browser
+ureq,programmatic
+Chimera,browser
+SeaMonkey,browser
+Phantom,programmatic
+Axel,programmatic
+ldspider,bot
+CCBot,bot
+AOL,browser
+Waterfox,browser
+Crosswalk,browser
+Pale Moon,browser
+Vivaldi,browser
+Slackbot-LinkExpanding,bot
+Sleipnir,browser
+Facebook,bot
+LINE,browser
+PycURL,programmatic
+FacebookBot,bot
+Iron,browser
+CFNetwork,browser
+okhttp,programmatic
+Chromium,browser
+AppEngine-Google,programmatic
+WhatsApp,browser
+InDigestion,unknown
+UptimeRobot,bot
+Umaka-Crawler,bot
+Basilisk,browser
+Chrome Frame,browser
+Altmetribot,bot
+insomnia,browser
+GooglePlusBot,bot
+Dragon,browser
+GrapeshotCrawler,bot
+yacybot,bot
+TelegramBot,bot
+WordPress,bot
+Riddler,bot
+Client,unknown
+got,unknown
+SemanticScholarBot,bot
+Instagram,browser
+WebKit Nightly,browser
+Puffin,unknown
+Zune,unknown
+InfoTigerBot,bot
+Word,unknown
+BlackBerry WebKit,browser
+SOMENAME Indexer,bot
+IE Mobile,browser
+Coc Coc,unknown
+DingTalkBot,bot
+BLEXBot,bot
+Aloha,unknown
+Nokia Browser,browser
+YandexSearch,bot
+BrightEdge Crawler,bot
+Mint Browser,browser
+com.apple.Safari.SearchHelper,browser
+Snapchat,browser
+360Spider,bot
+Scribdbot,bot
+Discordbot,bot
+Adsbot,bot
+AdsBot-Google,bot
+DuckDuckBot,bot
+Quora-Bot,bot
+Pinterest,browser
+ev-crawler,bot
+NBShareExtension,unknown
+Mattermost-Bot,bot
+Hammel,unknown
+Twitterbot,bot
+UT-Dorkbot,bot
+Konqueror,unknown
+LinkedInBot,bot
+coccocbot,bot
+AwarioSmartBot,bot
+Seznam prohlížeč,unknown
+ActiveComplyBot,bot
+SeznamBot,bot
+Outlook,browser
+lua-resty-http,programmatic
+WeChat,browser
+crawler,bot
+MsnBot,bot
+ActionExtension,unknown
+ViberBot,bot
+Vert.x-WebClient,unknown
+Snap URL Preview Service; bot,bot
+Yoink%20Add%20Extension,unknown
+iSec_Bot,bot
+Thunderbird,browser
+jpg-newsbot,bot
+com/bot,bot
+Download%20Shuttle,unknown
+Xenu Link Sleuth,unknown
+Epiphany,unknown
+AccompanyBot,bot
+QQ%E6%B5%8F%E8%A7%88%E5%99%A8HD,unknown
+SpiderLing,bot
+News,unknown
+Scribbr-Citation-Bot,bot
+archive.org_bot,bot
+ArchiveTeam ArchiveBot,bot
+Lunascape,unknown
+Jersey,unknown
+Mail.ru Chromium Browser,browser
+bitlybot,bot
+RepoLookoutBot,bot
+Firefox (Minefield),browser
+KakaoTalk%20Share%20Extension,unknown
+Lynx,browser
+MobileIron,unknown
+MyIE2,unknown
+YandexMetrika,unknown
+rn3,unknown
+PWA_Store_Scraper,bot
+; bot,bot
+PingdomBot,bot
+Firefox Beta,browser
+DotBot,bot
+Opera Mini,browser
+Netscape,browser
+Bon Echo,browser
+QQBrowserLite,browser
+akka-http,programmatic
+Flipboard,browser
+Tenta Browser,browser
