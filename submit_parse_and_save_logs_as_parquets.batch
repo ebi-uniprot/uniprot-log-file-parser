@@ -23,4 +23,4 @@
 python -m uniprot_log_file_parser.prepare_and_save_parquets \
 --out_dir '/hps/nobackup/martin/uniprot/users/dlrice/logs-parquets' \
 --namespace legacy \
---log_glob '/nfs/public/rw/homes/tc_uni01/uuw-stats/logs/*/*.log'
+--log_glob '/nfs/ebi/public/rw/homes/tc_uni01/uuw-stats/logs/*/*2021*.log'

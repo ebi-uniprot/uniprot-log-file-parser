@@ -27,6 +27,10 @@ def parse_log_line(line: str):
         return match.groupdict()
 
 
+def remove_non_utf8(s: pd.Series):
+    return s.str.encode("utf-8", errors="replace").str.decode("utf-8")
+
+
 def get_log_data_frame(log_path):
     with open(log_path, encoding="utf-8") as file:
         log_contents = file.read()
@@ -40,6 +44,10 @@ def get_log_data_frame(log_path):
             print(log_path, "Could not parse:", line, flush=True, file=sys.stderr)
             n_lines_skipped += 1
     df_log = pd.DataFrame(data)
+    df_log["request"] = remove_non_utf8(df_log["request"])
+    df_log["useragent"] = remove_non_utf8(df_log["useragent"])
+    df_log["referrer"] = remove_non_utf8(df_log["referrer"])
+    df_log["useragent_family"] = df_log["useragent"].apply(get_browser_family)
     df_log["status"] = df_log["status"].astype("category")
     df_log["method"] = df_log["method"].astype("category")
     df_log.loc[df_log["bytes"] == "-", "bytes"] = "0"
@@ -47,7 +55,6 @@ def get_log_data_frame(log_path):
     df_log["datetime"] = pd.to_datetime(
         df_log["datetime"], format="%d/%b/%Y:%H:%M:%S %z"
     )
-    df_log["useragent_family"] = df_log["useragent"].apply(get_browser_family)
     df_log = df_log.set_index("datetime")
     return df_log, n_lines_skipped
 
@@ -59,9 +66,7 @@ def save_parquets_by_date(df_log, out_dir):
         filepath = os.path.join(out_dir, filename)
         if os.path.isfile(filepath):
             df_existing = pd.read_parquet(filepath)
-            print("here", len(df_existing), len(df_timestamp))
             df_timestamp = pd.concat([df_existing, df_timestamp])
-            print("--", len(df_timestamp))
         df_timestamp.to_parquet(filepath, index=False)
 
 
@@ -123,7 +128,7 @@ def parse_and_save_log_as_parquets(
         return
     df_log, n_lines_skipped = get_log_data_frame(log_path)
     n_lines_parsed = len(df_log)
-    print(f"Attempting to save {n_lines_parsed} rows from {log_path}")
+    print(f"\tAttempting to save {n_lines_parsed} rows")
     save_parquets_by_date(df_log, out_dir_namespace)
     status_counts = get_status_counts(df_log)
     total_bytes = sum(df_log["bytes"])
@@ -197,7 +202,7 @@ def main():
     dbc = get_db_connection()
     paths = get_log_paths(log_glob, start_date, end_date)
     for index, path in enumerate(paths, 1):
-        print(f"{index}/{len(paths)}")
+        print(f"{index}/{len(paths)}: {path}")
         try:
             parse_and_save_log_as_parquets(out_dir, namespace, dbc, meta_path, path)
         except Exception as e:
