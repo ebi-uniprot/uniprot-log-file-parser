@@ -28,7 +28,14 @@ def parse_log_line(line: str):
         return match.groupdict()
 
 
-def get_log_data_frame(log_path):
+def is_static(request):
+    pattern = re.compile(
+        r"(/(images|scripts|style))|(\.(ico|css|png|jpg|svg|js|woff))|opensearch.xml"
+    )
+    return bool(pattern.search(request))
+
+
+def get_log_data_frame(log_path, is_legacy=False):
     try:
         with open(log_path, encoding="utf-8") as file:
             log_contents = file.read()
@@ -42,11 +49,14 @@ def get_log_data_frame(log_path):
     for line in log_contents.splitlines():
         parsed = parse_log_line(line)
         if parsed:
+            if is_legacy and is_static(parsed["request"]):
+                continue
             data.append(parsed)
         else:
             print(log_path, "Could not parse:", line, flush=True, file=sys.stderr)
             n_lines_skipped += 1
     df_log = pd.DataFrame(data)
+
     df_log["useragent_family"] = df_log["useragent"].apply(get_browser_family)
     df_log["status"] = df_log["status"].astype("category")
     df_log["method"] = df_log["method"].astype("category")
@@ -126,7 +136,8 @@ def parse_and_save_log_as_parquets(
     if is_log_already_saved_as_parquets(dbc, meta_path, log_path):
         print(f"{log_path} imported already", flush=True, file=sys.stderr)
         return
-    df_log, n_lines_skipped = get_log_data_frame(log_path)
+    is_legacy = namespace == "legacy"
+    df_log, n_lines_skipped = get_log_data_frame(log_path, is_legacy)
     n_lines_parsed = len(df_log)
     print(f"\tAttempting to save {n_lines_parsed} rows")
     save_parquets_by_date(df_log, out_dir_namespace)
