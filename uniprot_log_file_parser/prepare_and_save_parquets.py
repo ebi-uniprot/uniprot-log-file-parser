@@ -6,6 +6,7 @@ import csv
 from glob import glob
 from collections import defaultdict
 from pathlib import Path
+import traceback
 import pandas as pd
 from duckdb import DuckDBPyConnection
 from uniprot_log_file_parser.ua import get_browser_family
@@ -27,13 +28,15 @@ def parse_log_line(line: str):
         return match.groupdict()
 
 
-def remove_non_utf8(s: pd.Series):
-    return s.str.encode("utf-8", errors="replace").str.decode("utf-8")
-
-
 def get_log_data_frame(log_path):
-    with open(log_path, encoding="utf-8") as file:
-        log_contents = file.read()
+    try:
+        with open(log_path, encoding="utf-8") as file:
+            log_contents = file.read()
+    except UnicodeDecodeError:
+        # Legacy logs sometime have non utf-8 characters
+        with open(log_path, encoding="ISO-8859-1") as file:
+            log_contents = file.read().encode("utf-8", errors="replace").decode("utf-8")
+
     data = []
     n_lines_skipped = 0
     for line in log_contents.splitlines():
@@ -44,9 +47,6 @@ def get_log_data_frame(log_path):
             print(log_path, "Could not parse:", line, flush=True, file=sys.stderr)
             n_lines_skipped += 1
     df_log = pd.DataFrame(data)
-    df_log["request"] = remove_non_utf8(df_log["request"])
-    df_log["useragent"] = remove_non_utf8(df_log["useragent"])
-    df_log["referrer"] = remove_non_utf8(df_log["referrer"])
     df_log["useragent_family"] = df_log["useragent"].apply(get_browser_family)
     df_log["status"] = df_log["status"].astype("category")
     df_log["method"] = df_log["method"].astype("category")
@@ -205,15 +205,14 @@ def main():
         print(f"{index}/{len(paths)}: {path}")
         try:
             parse_and_save_log_as_parquets(out_dir, namespace, dbc, meta_path, path)
-        except Exception as e:
+        except Exception as exception:
             print(
-                "Could not save due to exception:\n",
-                path,
-                "\n",
-                e,
+                f"Could not save due to exception:\n{exception}",
                 flush=True,
                 file=sys.stderr,
             )
+            traceback.print_stack()
+
         print("-" * 25)
     dbc.close()
 
