@@ -75,9 +75,9 @@ def save_parquets_by_date(df_log, out_dir):
         filename = f"{yyyy_mm}.parquet"
         filepath = os.path.join(out_dir, filename)
         if os.path.isfile(filepath):
-            df_existing = pd.read_parquet(filepath)
+            df_existing = pd.read_parquet(filepath, engine="fastparquet")
             df_timestamp = pd.concat([df_existing, df_timestamp])
-        df_timestamp.to_parquet(filepath, index=False)
+        df_timestamp.to_parquet(filepath, engine="fastparquet")
 
 
 def get_status_counts(df_log):
@@ -155,11 +155,11 @@ def parse_and_save_log_as_parquets(
 
 
 def is_log_in_date_range(log_path: str, start_date: str, end_date: str):
-    log_pattern = re.compile(r"\.([0-9\-]+)\.log$")
+    log_pattern = re.compile(r"([0-9\-]+)\.log$")
     match = log_pattern.search(log_path)
     assert match
     log_date = match.groups()[0]
-    return start_date <= log_date < end_date
+    return start_date <= log_date <= end_date
 
 
 def get_log_paths(log_glob: str, start_date: str, end_date: str):
