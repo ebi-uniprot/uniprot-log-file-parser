@@ -5,7 +5,7 @@
 #   sbatch submit_parse_and_save_logs_as_parquets.batch
 
 # Allocate run time for the job
-#SBATCH -t 20:00:00
+#SBATCH -t 30:00:00
 
 # Allocate CPUs
 #SBATCH -c 2
@@ -14,13 +14,15 @@
 #SBATCH -p datamover
 
 # Allocate memory
-#SBATCH --mem=32G
+#SBATCH --mem=80G
 
 # Change working directory
 #SBATCH --chdir=/homes/dlrice/uniprot-log-file-parser
 
 # Actual command to run in the job
 python -m uniprot_log_file_parser.prepare_and_save_parquets \
---out_dir '/hps/nobackup/martin/uniprot/users/dlrice/logs-parquets' \
+--out_dir '/hps/nobackup/martin/uniprot/users/dlrice/logs-parquets-2' \
 --namespace legacy \
---log_glob '/nfs/ebi/public/rw/homes/tc_uni01/uuw-stats/logs/*/*2022-03-0*.log'
+--log_glob '/nfs/ebi/public/rw/homes/tc_uni01/uuw-stats/logs/*/*2022-03-0*.log' \
+--start_date '2022-01-01' \
+--end_date '2022-03-31'
