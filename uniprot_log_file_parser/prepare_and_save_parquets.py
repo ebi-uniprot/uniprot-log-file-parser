@@ -1,3 +1,4 @@
+import hashlib
 import os.path
 import argparse
 import sys
@@ -53,7 +54,7 @@ def get_log_data_frame(log_path, is_legacy=False):
                 continue
             data.append(parsed)
         else:
-            print(log_path, "Could not parse:", line, flush=True, file=sys.stderr)
+            print(log_path, "Could not parse:", line)
             n_lines_skipped += 1
     df_log = pd.DataFrame(data)
 
@@ -69,15 +70,15 @@ def get_log_data_frame(log_path, is_legacy=False):
     return df_log, n_lines_skipped
 
 
-def save_parquets_by_date(df_log, out_dir):
+def save_parquets_by_date(df_log: pd.DataFrame, out_dir: str, log_path: str):
     for timestamp, df_timestamp in df_log.groupby(pd.Grouper(freq="M")):
         yyyy_mm = timestamp.strftime("%Y-%m")
-        filename = f"{yyyy_mm}.parquet"
+        sha256 = hashlib.sha256(log_path.encode()).hexdigest()
+        filename = f"{yyyy_mm}.parquet.partial-{sha256}"
         filepath = os.path.join(out_dir, filename)
         if os.path.isfile(filepath):
-            df_existing = pd.read_parquet(filepath, engine="fastparquet")
-            df_timestamp = pd.concat([df_existing, df_timestamp])
-        df_timestamp.to_parquet(filepath, engine="fastparquet")
+            raise FileExistsError(filepath)
+        df_timestamp.to_parquet(filepath)
 
 
 def get_status_counts(df_log):
@@ -140,7 +141,7 @@ def parse_and_save_log_as_parquets(
     df_log, n_lines_skipped = get_log_data_frame(log_path, is_legacy)
     n_lines_parsed = len(df_log)
     print(f"\tAttempting to save {n_lines_parsed} rows")
-    save_parquets_by_date(df_log, out_dir_namespace)
+    save_parquets_by_date(df_log, out_dir_namespace, log_path)
     status_counts = get_status_counts(df_log)
     total_bytes = sum(df_log["bytes"])
     save_log_meta(
@@ -215,7 +216,8 @@ def main():
     for index, path in enumerate(paths, 1):
         print(f"{index}/{len(paths)}: {path}")
         try:
-            parse_and_save_log_as_parquets(out_dir, namespace, dbc, meta_path, path)
+            parse_and_save_log_as_parquets(
+                out_dir, namespace, dbc, meta_path, path)
         except Exception as exception:
             print(
                 f"Could not save due to exception:\n{exception}",
