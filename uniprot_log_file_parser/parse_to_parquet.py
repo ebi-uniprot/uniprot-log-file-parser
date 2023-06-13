@@ -2,15 +2,14 @@ import hashlib
 import os.path
 import argparse
 import re
-import csv
 from collections import defaultdict
 from pathlib import Path
 import pandas as pd
-from duckdb import DuckDBPyConnection
 from uniprot_log_file_parser.ua import get_browser_family
-from uniprot_log_file_parser.db import (
-    get_db_connection,
-    is_log_already_saved_as_parquets,
+from uniprot_log_file_parser.meta import (
+    in_meta,
+    save_meta
+
 )
 
 
@@ -85,62 +84,23 @@ def get_status_counts(df_log):
     return status_counts
 
 
-def save_log_meta(
-    meta_path: str,
-    namespace: str,
-    log_path: str,
-    total_bytes: int,
-    lines_imported: int,
-    lines_skipped: int,
-    status_counts: defaultdict,
-):
-    columns = [
-        "namespace",
-        "log_path",
-        "total_bytes",
-        "lines_imported",
-        "lines_skipped",
-        "status_1xx",
-        "status_2xx",
-        "status_3xx",
-        "status_4xx",
-        "status_5xx",
-    ]
-    if not os.path.isfile(meta_path):
-        with open(meta_path, "w", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow(columns)
-    with open(meta_path, "a", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(
-            [
-                namespace,
-                log_path,
-                total_bytes,
-                lines_imported,
-                lines_skipped,
-            ]
-            + [status_counts[f"status_{s}xx"] for s in range(1, 6)]
-        )
-
-
 def parse_and_save_log_as_parquets(
-    out_dir: str, namespace: str, dbc: DuckDBPyConnection, meta_path: str, log_path: str
+    out_dir: str, namespace: str, meta_path: str, log_path: str
 ):
     out_dir_namespace = os.path.join(out_dir, namespace)
     Path(out_dir_namespace).mkdir(parents=True, exist_ok=True)
     log_path = os.path.abspath(log_path)
-    if is_log_already_saved_as_parquets(dbc, meta_path, log_path):
+    if in_meta(meta_path, log_path):
         print(f"{log_path} saved already")
         return
     is_legacy = namespace == "legacy"
     df_log, n_lines_skipped = get_log_data_frame(log_path, is_legacy)
     n_lines_parsed = len(df_log)
-    print(f"\tAttempting to save {n_lines_parsed} rows")
+    print(f"Saving {n_lines_parsed} rows")
     save_parquets_by_date(df_log, out_dir_namespace, log_path)
     status_counts = get_status_counts(df_log)
     total_bytes = sum(df_log["bytes"])
-    save_log_meta(
+    save_meta(
         meta_path,
         namespace,
         log_path,
@@ -174,10 +134,8 @@ def main():
     out_dir, namespace, log_path = get_arguments()
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     meta_path = os.path.join(out_dir, "meta.csv")
-    dbc = get_db_connection()
     parse_and_save_log_as_parquets(
-        out_dir, namespace, dbc, meta_path, log_path)
-    dbc.close()
+        out_dir, namespace, meta_path, log_path)
 
 
 if __name__ == "__main__":
