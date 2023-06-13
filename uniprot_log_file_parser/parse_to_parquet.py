@@ -4,7 +4,6 @@ import argparse
 import sys
 import re
 import csv
-from glob import glob
 from collections import defaultdict
 from pathlib import Path
 import traceback
@@ -74,7 +73,7 @@ def save_parquets_by_date(df_log: pd.DataFrame, out_dir: str, log_path: str):
     for timestamp, df_timestamp in df_log.groupby(pd.Grouper(freq="M")):
         yyyy_mm = timestamp.strftime("%Y-%m")
         sha256 = hashlib.sha256(log_path.encode()).hexdigest()
-        filename = f"{yyyy_mm}.parquet.partial-{sha256}"
+        filename = f"{yyyy_mm}.{sha256}.parquet"
         filepath = os.path.join(out_dir, filename)
         if os.path.isfile(filepath):
             raise FileExistsError(filepath)
@@ -111,10 +110,10 @@ def save_log_meta(
         "status_5xx",
     ]
     if not os.path.isfile(meta_path):
-        with open(meta_path, "w") as f:
+        with open(meta_path, "w", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow(columns)
-    with open(meta_path, "a") as f:
+    with open(meta_path, "a", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(
             [
@@ -135,7 +134,7 @@ def parse_and_save_log_as_parquets(
     Path(out_dir_namespace).mkdir(parents=True, exist_ok=True)
     log_path = os.path.abspath(log_path)
     if is_log_already_saved_as_parquets(dbc, meta_path, log_path):
-        print(f"{log_path} imported already", flush=True, file=sys.stderr)
+        print(f"{log_path} saved already")
         return
     is_legacy = namespace == "legacy"
     df_log, n_lines_skipped = get_log_data_frame(log_path, is_legacy)
@@ -155,25 +154,6 @@ def parse_and_save_log_as_parquets(
     )
 
 
-def is_log_in_date_range(log_path: str, start_date: str, end_date: str):
-    log_pattern = re.compile(r"([0-9\-]+)\.log$")
-    match = log_pattern.search(log_path)
-    assert match
-    log_date = match.groups()[0]
-    return start_date <= log_date <= end_date
-
-
-def get_log_paths(log_glob: str, start_date: str, end_date: str):
-    log_paths = glob(log_glob)
-    if start_date and end_date:
-        return [
-            path
-            for path in log_paths
-            if is_log_in_date_range(path, start_date, end_date)
-        ]
-    return log_paths
-
-
 def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -185,48 +165,21 @@ def get_arguments():
         "--namespace", type=str, help="The namespace of the log file eg uniprotkb"
     )
     parser.add_argument(
-        "--log_glob",
+        "--log_path",
         type=str,
-        help="A glob pattern for all of the log files to be parsed",
-    )
-    parser.add_argument(
-        "--start_date",
-        type=str,
-        help="The date from which log files will be included eg 2022-07-01",
-        nargs="?",
-        const=None,
-    )
-    parser.add_argument(
-        "--end_date",
-        type=str,
-        help="The date upto which log files will be included eg 2023-06-01",
-        nargs="?",
-        const=None,
+        help="The path to the log file to parse",
     )
     args = parser.parse_args()
-    return args.out_dir, args.namespace, args.log_glob, args.start_date, args.end_date
+    return args.out_dir, args.namespace, args.log_path
 
 
 def main():
-    out_dir, namespace, log_glob, start_date, end_date = get_arguments()
+    out_dir, namespace, log_path = get_arguments()
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     meta_path = os.path.join(out_dir, "meta.csv")
     dbc = get_db_connection()
-    paths = get_log_paths(log_glob, start_date, end_date)
-    for index, path in enumerate(paths, 1):
-        print(f"{index}/{len(paths)}: {path}")
-        try:
-            parse_and_save_log_as_parquets(
-                out_dir, namespace, dbc, meta_path, path)
-        except Exception as exception:
-            print(
-                f"Could not save due to exception:\n{exception}",
-                flush=True,
-                file=sys.stderr,
-            )
-            traceback.print_stack()
-
-        print("-" * 25)
+    parse_and_save_log_as_parquets(
+        out_dir, namespace, dbc, meta_path, log_path)
     dbc.close()
 
 
