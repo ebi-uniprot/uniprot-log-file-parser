@@ -1,12 +1,10 @@
 import hashlib
 import os.path
 import argparse
-import sys
 import re
 import csv
 from collections import defaultdict
 from pathlib import Path
-import traceback
 import pandas as pd
 from duckdb import DuckDBPyConnection
 from uniprot_log_file_parser.ua import get_browser_family
@@ -56,7 +54,6 @@ def get_log_data_frame(log_path, is_legacy=False):
             print(log_path, "Could not parse:", line)
             n_lines_skipped += 1
     df_log = pd.DataFrame(data)
-
     df_log["useragent_family"] = df_log["useragent"].apply(get_browser_family)
     df_log["status"] = df_log["status"].astype("category")
     df_log["method"] = df_log["method"].astype("category")
