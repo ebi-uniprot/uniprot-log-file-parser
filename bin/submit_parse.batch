@@ -1,0 +1,15 @@
+#!/bin/bash
+source config.sh
+
+#SBATCH --ntasks=1
+#SBATCH -t 02:00:00
+#SBATCH -c 1
+#SBATCH -p datamover
+#SBATCH --mem=6G
+
+log_path=$(head -n $SLURM_ARRAY_TASK_ID $LOG_FILE_LIST | tail -1)
+
+python -m uniprot_log_file_parser.parse_to_parquet \
+--out_dir $RESULTS_DIRECTORY \
+--namespace $NAMESPACE \
+--log_path $log_path
