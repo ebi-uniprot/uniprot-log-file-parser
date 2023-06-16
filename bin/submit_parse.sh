@@ -8,8 +8,13 @@ ls /nfs/ebi/public/rw/homes/tc_uni01/uuw-stats/logs/*/*2022-03-01.log > $LOG_FIL
 n=$(wc -l < $LOG_FILE_LIST)
 
 sbatch \
+--time 2:00:00 \
+--cpus-per-task 1 \
+--partition datamover \
 --array=1-$n \
 --output=$OUT_DIRECTORY/parse_%A_%a.o \
 --error=$ERROR_DIRECTOR/parse_%A_%a.e \
 --chdir=$MODULE_DIRECTORY \
-submit_parse.batch
+--ntasks=1 \
+--mem=6G \
+parse_array_task.batch
