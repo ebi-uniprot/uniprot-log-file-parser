@@ -1,5 +1,5 @@
 #!/bin/bash
-source config.sh
+source bin/config.sh
 
 log_path=$(head -n $SLURM_ARRAY_TASK_ID $LOG_FILE_LIST | tail -1)
 

@@ -12,8 +12,6 @@ sbatch \
 --cpus-per-task 1 \
 --partition datamover \
 --array=1-$n \
---output=$OUT_DIRECTORY/parse_%A_%a.o \
---error=$ERROR_DIRECTOR/parse_%A_%a.e \
 --chdir=$MODULE_DIRECTORY \
 --ntasks=1 \
 --mem=6G \
