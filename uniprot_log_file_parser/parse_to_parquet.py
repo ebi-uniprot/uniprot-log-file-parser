@@ -6,11 +6,7 @@ from collections import defaultdict
 from pathlib import Path
 import pandas as pd
 from uniprot_log_file_parser.ua import get_browser_family
-from uniprot_log_file_parser.meta import (
-    in_meta,
-    save_meta
-
-)
+from uniprot_log_file_parser.meta import in_meta, init_meta, save_meta
 
 
 def parse_log_line(line: str):
@@ -79,18 +75,16 @@ def save_parquets_by_date(df_log: pd.DataFrame, out_dir: str, log_path: str):
 def get_status_counts(df_log):
     status_counts = defaultdict(int)
     for status, count in df_log.status.value_counts().items():
-        k = f"status_{str(status)[0]}xx"
+        k = f"{str(status)[0]}xx"
         status_counts[k] += count
     return status_counts
 
 
-def parse_and_save_log_as_parquets(
-    out_dir: str, namespace: str, meta_path: str, log_path: str
-):
+def parse_and_save_log_as_parquets(out_dir: str, namespace: str, log_path: str):
     out_dir_namespace = os.path.join(out_dir, namespace)
     Path(out_dir_namespace).mkdir(parents=True, exist_ok=True)
     log_path = os.path.abspath(log_path)
-    if in_meta(meta_path, log_path):
+    if in_meta(log_path):
         print(f"{log_path} saved already")
         return
     is_legacy = namespace == "legacy"
@@ -101,7 +95,6 @@ def parse_and_save_log_as_parquets(
     status_counts = get_status_counts(df_log)
     total_bytes = sum(df_log["bytes"])
     save_meta(
-        meta_path,
         namespace,
         log_path,
         total_bytes,
@@ -133,9 +126,8 @@ def get_arguments():
 def main():
     out_dir, namespace, log_path = get_arguments()
     Path(out_dir).mkdir(parents=True, exist_ok=True)
-    meta_path = os.path.join(out_dir, "meta.csv")
-    parse_and_save_log_as_parquets(
-        out_dir, namespace, meta_path, log_path)
+    init_meta(meta_path=os.path.join(out_dir, "meta.sqlite"))
+    parse_and_save_log_as_parquets(out_dir, namespace, log_path)
 
 
 if __name__ == "__main__":
