@@ -1,5 +1,5 @@
 #!/bin/bash
-RESULTS_DIRECTORY=/hps/nobackup/martin/uniprot/users/dlrice/logs-parquets-5
+RESULTS_DIRECTORY=/hps/nobackup/martin/uniprot/users/dlrice/logs-parquets-6
 NAMESPACE=legacy
 OUT_DIRECTORY=$RESULTS_DIRECTORY/out
 ERROR_DIRECTORY=$RESULTS_DIRECTORY/error
