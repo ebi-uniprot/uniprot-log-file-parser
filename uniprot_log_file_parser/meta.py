@@ -1,19 +1,15 @@
 import os.path
 import csv
 from collections import defaultdict
-import duckdb
 
 
-def in_meta(
-    meta_path: str, log_path: str
-):
+def in_meta(meta_path: str, log_path: str):
     if not os.path.isfile(meta_path):
         return False
-    return bool(
-        duckdb.sql(
-            f"SELECT log_path FROM read_csv_auto('{meta_path}', header=True) WHERE log_path = '{log_path}'"
-        )
-    )
+    with open(meta_path, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        log_paths = {r["log_path"] for r in reader}
+    return log_path in log_paths
 
 
 def save_meta(
