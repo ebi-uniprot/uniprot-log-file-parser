@@ -55,8 +55,9 @@ def get_log_data_frame(log_path, is_legacy=False):
     df_log.loc[df_log["bytes"] == "-", "bytes"] = "0"
     df_log["bytes"] = pd.to_numeric(df_log["bytes"])
     df_log["datetime"] = pd.to_datetime(
-        df_log["datetime"], format="%d/%b/%Y:%H:%M:%S %z"
+        df_log["datetime"], format="%d/%b/%Y:%H:%M:%S %z", errors="coerce"
     )
+    df_log = df_log.dropna(how="all", subset="datetime")
     df_log = df_log.set_index("datetime")
     return df_log, n_lines_skipped
 
