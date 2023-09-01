@@ -1,6 +1,7 @@
 *.duckdb
 *.duckdb.*
 archive/
+test/
 
 .DS_Store
 out/
