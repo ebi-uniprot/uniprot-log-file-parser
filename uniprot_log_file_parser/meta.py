@@ -42,7 +42,8 @@ def save_meta(
     status_counts: defaultdict,
 ):
     log_meta_path = get_meta_path_for_log_path(meta_dir, log_path)
-    assert not os.path.exists(log_meta_path)
+    if os.path.exists(log_meta_path):
+        raise FileExistsError(log_meta_path)
     with open(log_meta_path, "w", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(
