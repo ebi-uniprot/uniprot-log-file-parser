@@ -27,19 +27,19 @@ def get_date(filename):
 def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--dir",
+        "--working_dir",
         type=str,
         help="The directory where the parquet files will be collected, "
         "merged and saved",
     )
     args = parser.parse_args()
-    return args.dir
+    return args.working_dir
 
 
 def main():
-    args = get_arguments()
+    working_dir = get_arguments()
     setup_duckdb()
-    os.chdir(args.dir)
+    os.chdir(working_dir)
     dates = {get_date(f) for f in glob("*")}
     for yyyy_mm in dates:
         if yyyy_mm:
