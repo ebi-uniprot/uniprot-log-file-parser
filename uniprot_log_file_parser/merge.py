@@ -6,12 +6,15 @@ from glob import glob
 import duckdb
 
 
-def setup_duckdb():
-    duckdb.sql("SET threads TO 3; SET memory_limit='16GB'")
+def get_duckdb_connection():
+    duckdb_con = duckdb.connect()
+    duckdb_con.sql("SET threads TO 4")
+    duckdb_con.sql("SET memory_limit='16GB'")
+    return duckdb_con
 
 
-def merge_parquets(date):
-    duckdb.sql(
+def merge_parquets(duckdb_con, date):
+    duckdb_con.sql(
         f"COPY (SELECT * FROM '{date}.*.parquet') TO "
         f"'{date}.parquet' (FORMAT 'parquet')"
     )
@@ -38,12 +41,12 @@ def get_arguments():
 
 def main():
     working_dir = get_arguments()
-    setup_duckdb()
     os.chdir(working_dir)
+    duckdb_con = get_duckdb_connection()
     dates = {get_date(f) for f in glob("*")}
     for yyyy_mm in dates:
         if yyyy_mm:
-            merge_parquets(yyyy_mm)
+            merge_parquets(duckdb_con, yyyy_mm)
 
 
 if __name__ == "__main__":
