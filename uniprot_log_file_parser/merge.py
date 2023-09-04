@@ -18,7 +18,7 @@ def merge_parquets(date):
 
 
 def get_date(filename):
-    p = re.compile(r"^(?P<yyyy_mm>\d{4}-\d{2})\..+\.parquet$")
+    p = re.compile(r"^(?P<yyyy_mm>\d{4}-\d{2}).*\.parquet$")
     m = p.match(filename)
     if m:
         return m.group("yyyy_mm")
