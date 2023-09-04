@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import argparse
+import os
 import re
 from glob import glob
 import duckdb
@@ -9,8 +11,7 @@ def setup_duckdb():
 
 
 def merge_parquets(date):
-    # duckdb.sql(
-    print(
+    duckdb.sql(
         f"COPY (SELECT * FROM '{date}.*.parquet') TO "
         f"'{date}.parquet' (FORMAT 'parquet')"
     )
@@ -23,8 +24,22 @@ def get_date(filename):
         return m.group("yyyy_mm")
 
 
+def get_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--dir",
+        type=str,
+        help="The directory where the parquet files will be collected, "
+        "merged and saved",
+    )
+    args = parser.parse_args()
+    return args.dir
+
+
 def main():
+    args = get_arguments()
     setup_duckdb()
+    os.chdir(args.dir)
     dates = {get_date(f) for f in glob("*")}
     for yyyy_mm in dates:
         if yyyy_mm:
