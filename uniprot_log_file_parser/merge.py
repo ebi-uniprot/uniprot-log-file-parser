@@ -26,7 +26,7 @@ def get_chunks():
     for filename in filenames:
         yyyy_mm = get_chunk_date(filename)
         if yyyy_mm:
-            date_to_chunk_parquets[yyyy_mm] += filename
+            date_to_chunk_parquets[yyyy_mm].append(filename)
     return date_to_chunk_parquets
 
 
@@ -77,7 +77,7 @@ def main():
     for yyyy_mm, chunk_parquets in chunks.items():
         print("-" * 20)
         print(f"Merging parquets from {yyyy_mm}:")
-        print(chunk_parquets)
+        print("\n".join([f"\t{p}" for p in chunk_parquets]))
         main_parquet = get_main_filename(yyyy_mm)
         if os.path.exists(main_parquet):
             from_parquets = chunk_parquets + [main_parquet]
