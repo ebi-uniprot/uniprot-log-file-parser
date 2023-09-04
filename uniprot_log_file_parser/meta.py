@@ -3,8 +3,12 @@ import csv
 from collections import defaultdict
 
 
+def encode_log_path(log_path: str):
+    return os.path.abspath(log_path)[1:].replace("/", "_")
+
+
 def get_meta_path_for_log_path(meta_dir: str, log_path: str):
-    return os.path.join(meta_dir, os.path.abspath(log_path)[1:].replace("/", "_"))
+    return os.path.join(meta_dir, encode_log_path(log_path))
 
 
 def in_meta(meta_dir: str, log_path: str):

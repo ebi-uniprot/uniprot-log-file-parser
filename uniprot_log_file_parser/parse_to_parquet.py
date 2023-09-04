@@ -1,4 +1,3 @@
-import hashlib
 import os.path
 import argparse
 import re
@@ -6,7 +5,12 @@ from collections import defaultdict
 from pathlib import Path
 import pandas as pd
 from uniprot_log_file_parser.ua import get_browser_family
-from uniprot_log_file_parser.meta import in_meta, save_meta, save_meta_columns
+from uniprot_log_file_parser.meta import (
+    encode_log_path,
+    in_meta,
+    save_meta,
+    save_meta_columns,
+)
 
 
 def parse_log_line(line: str):
@@ -64,10 +68,10 @@ def get_log_data_frame(log_path, is_legacy=False):
 
 
 def save_parquets_by_date(df_log: pd.DataFrame, out_dir: str, log_path: str):
+    encoded_log_path = encode_log_path(log_path)
     for timestamp, df_timestamp in df_log.groupby(pd.Grouper(freq="M")):
         yyyy_mm = timestamp.strftime("%Y-%m")
-        sha256 = hashlib.sha256(log_path.encode()).hexdigest()
-        filename = f"{yyyy_mm}.{sha256}.parquet"
+        filename = f"{yyyy_mm}.{encoded_log_path}.parquet"
         filepath = os.path.join(out_dir, filename)
         if os.path.isfile(filepath):
             raise FileExistsError(filepath)
