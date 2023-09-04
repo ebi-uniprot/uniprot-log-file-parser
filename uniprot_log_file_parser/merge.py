@@ -7,7 +7,7 @@ import duckdb
 
 
 def setup_duckdb():
-    duckdb.sql("SET threads TO 3; SET memory_limit='6GB'")
+    duckdb.sql("SET threads TO 3; SET memory_limit='16GB'")
 
 
 def merge_parquets(date):
