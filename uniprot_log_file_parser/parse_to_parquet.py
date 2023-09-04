@@ -57,6 +57,7 @@ def get_log_data_frame(log_path, is_legacy=False):
     df_log["datetime"] = pd.to_datetime(
         df_log["datetime"], format="%d/%b/%Y:%H:%M:%S %z", errors="coerce"
     )
+    n_lines_skipped += df_log["datetime"].isna().sum()
     df_log = df_log.dropna(how="all", subset="datetime")
     df_log = df_log.set_index("datetime")
     return df_log, n_lines_skipped
