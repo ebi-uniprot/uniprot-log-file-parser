@@ -3,7 +3,6 @@ import argparse
 from collections import defaultdict
 import os
 import re
-from glob import glob
 import duckdb
 
 
@@ -14,47 +13,48 @@ def get_duckdb_connection():
     return duckdb_con
 
 
-def get_chunks_counts(duckdb_con, date):
-    pass
+def get_chunk_date(filename):
+    p = re.compile(r"^(?P<yyyy_mm>\d{4}-\d{2})\..+\.parquet$")
+    m = p.match(filename)
+    if m:
+        return m.group("yyyy_mm")
 
 
-def get_chunks(date):
+def get_chunks():
     filenames = os.listdir()
-    date_to_paths = defaultdict(list)
+    date_to_chunk_parquets = defaultdict(list)
     for filename in filenames:
-        date = get_date(filename)
-        date_to_paths[date] += filename
-    return date_to_paths
+        yyyy_mm = get_chunk_date(filename)
+        if yyyy_mm:
+            date_to_chunk_parquets[yyyy_mm] += filename
+    return date_to_chunk_parquets
 
 
 def get_main_filename(date):
     return f"{date}.parquet"
 
 
-def does_main_exist(filename):
-    return os.path.exists(filename)
-
-
 def get_parquets_list(parquets):
     return [f"'{p}'" for p in parquets].join(",")
 
 
-def merge_parquets(duckdb_con, from_parquets_list, to_parquet):
+def merge_parquets(duckdb_con, from_parquets, to_parquet):
+    from_parquets = get_parquets_list(from_parquets)
     duckdb_con.sql(
-        f"COPY (SELECT * FROM [{from_parquets_list}]"
+        f"COPY (SELECT * FROM [{from_parquets}]"
         f" TO '{to_parquet}' (FORMAT 'parquet')"
     )
 
 
-def count_parquets_list(duckdb_con, parquets_list):
-    duckdb_con.sql(f"COUNT (SELECT * FROM [{parquets_list}])")
+def get_parquets_count(duckdb_con, parquets):
+    from_parquets = get_parquets_list(parquets)
+    return duckdb_con.sql(f"SELECT COUNT(*) FROM read_parquet([{from_parquets}])")
 
 
-def get_date(filename):
-    p = re.compile(r"^(?P<yyyy_mm>\d{4}-\d{2})\..+\.parquet$")
-    m = p.match(filename)
-    if m:
-        return m.group("yyyy_mm")
+def remove_parquets(parquets: list[str]) -> None:
+    for parquet in parquets:
+        assert parquet.endswith(".parquet")
+        os.remove(parquet)
 
 
 def get_arguments():
@@ -73,14 +73,18 @@ def main():
     working_dir = get_arguments()
     os.chdir(working_dir)
     duckdb_con = get_duckdb_connection()
-    dates = {get_date(f) for f in glob("*")}
-    for yyyy_mm in dates:
-        if yyyy_mm:
-            # get_chunks_counts()
-            # get_main_counts()
-            merge_parquets(duckdb_con, yyyy_mm)
-            # check_counts()
-            # remove_chunks()
+    chunks = get_chunks()
+    for yyyy_mm, chunk_parquets in chunks.items():
+        main_parquet = get_main_filename(yyyy_mm)
+        if os.path.exists(main_parquet):
+            from_parquets = chunk_parquets + [main_parquet]
+        else:
+            from_parquets = chunk_parquets
+        from_parquets_count = get_parquets_count(duckdb_con, from_parquets)
+        merge_parquets(duckdb_con, from_parquets, main_parquet)
+        merged_count = get_parquets_count(duckdb_con, [main_parquet])
+        assert merged_count == from_parquets_count
+        remove_parquets(chunk_parquets)
 
 
 if __name__ == "__main__":
