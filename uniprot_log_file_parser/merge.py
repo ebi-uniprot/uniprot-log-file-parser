@@ -35,7 +35,7 @@ def get_main_filename(date):
 
 
 def get_parquets_list(parquets):
-    return [f"'{p}'" for p in parquets].join(",")
+    return ",".join([f"'{p}'" for p in parquets])
 
 
 def merge_parquets(duckdb_con, from_parquets, to_parquet):
@@ -77,7 +77,7 @@ def main():
     for yyyy_mm, chunk_parquets in chunks.items():
         print("-" * 20)
         print(f"Merging parquets from {yyyy_mm}:")
-        print("\n".join(chunk_parquets))
+        print(chunk_parquets)
         main_parquet = get_main_filename(yyyy_mm)
         if os.path.exists(main_parquet):
             from_parquets = chunk_parquets + [main_parquet]
