@@ -77,7 +77,7 @@ def main():
     for yyyy_mm, chunk_parquets in chunks.items():
         print("-" * 20)
         print(f"Merging parquets from {yyyy_mm}:")
-        print(chunk_parquets.join("\n"))
+        print("\n".join(chunk_parquets))
         main_parquet = get_main_filename(yyyy_mm)
         if os.path.exists(main_parquet):
             from_parquets = chunk_parquets + [main_parquet]
