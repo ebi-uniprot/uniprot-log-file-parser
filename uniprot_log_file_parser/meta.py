@@ -17,7 +17,6 @@ def in_meta(meta_dir: str, log_path: str):
 
 def save_meta_columns(meta_dir):
     columns = [
-        "namespace",
         "log_path",
         "total_bytes",
         "lines_imported",
@@ -38,7 +37,6 @@ def save_meta_columns(meta_dir):
 
 def save_meta(
     meta_dir: str,
-    namespace: str,
     log_path: str,
     total_bytes: int,
     lines_imported: int,
@@ -52,7 +50,6 @@ def save_meta(
         writer = csv.writer(f)
         writer.writerow(
             [
-                namespace,
                 log_path,
                 total_bytes,
                 lines_imported,

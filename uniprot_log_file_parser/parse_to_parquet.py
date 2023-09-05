@@ -14,7 +14,7 @@ from uniprot_log_file_parser.meta import (
 )
 
 
-def parse_log_line(line: str):
+def parse_log_line(line: str) -> dict[str, str]:
     pattern = re.compile(
         r"^\S+ \S+ \S+ \[(?P<datetime>[^\]]+)\] \""
         r"(?P<method>(GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE|PATCH|)) "
@@ -26,14 +26,14 @@ def parse_log_line(line: str):
         return match.groupdict()
 
 
-def is_static(request):
+def is_static(request: str) -> bool:
     pattern = re.compile(
         r"(/(images|scripts|style))|(\.(ico|css|png|jpg|svg|js|woff))|opensearch.xml"
     )
     return bool(pattern.search(request))
 
 
-def get_log_data_frame(log_path, is_legacy=False):
+def get_log_data_frame(log_path: str, is_legacy=False) -> pd.DataFrame:
     try:
         with open(log_path, encoding="utf-8") as file:
             log_contents = file.read()
@@ -79,7 +79,7 @@ def save_parquets_by_date(df_log: pd.DataFrame, out_dir: str, log_path: str):
         df_timestamp.to_parquet(filepath)
 
 
-def get_status_counts(df_log):
+def get_status_counts(df_log: pd.DataFrame) -> defaultdict(int):
     status_counts = defaultdict(int)
     for status, count in df_log.status.value_counts().items():
         k = f"status_{str(status)[0]}xx"
@@ -88,24 +88,22 @@ def get_status_counts(df_log):
 
 
 def parse_and_save_log_as_parquets(
-    out_dir: str, namespace: str, meta_dir: str, log_path: str
-):
-    out_dir_namespace = os.path.join(out_dir, namespace)
-    Path(out_dir_namespace).mkdir(parents=True, exist_ok=True)
+    out_dir: str, meta_dir: str, log_path: str, is_legacy=False
+) -> None:
+    out_dir_parquet = os.path.join(out_dir, "parquet")
+    Path(out_dir_parquet).mkdir(parents=True, exist_ok=True)
     log_path = os.path.abspath(log_path)
     if in_meta(meta_dir, log_path):
         print(f"{log_path} saved already")
         return
-    is_legacy = namespace == "legacy"
     df_log, n_lines_skipped = get_log_data_frame(log_path, is_legacy)
     n_lines_parsed = len(df_log)
     print(f"Saving {n_lines_parsed} rows")
-    save_parquets_by_date(df_log, out_dir_namespace, log_path)
+    save_parquets_by_date(df_log, out_dir_parquet, log_path)
     status_counts = get_status_counts(df_log)
     total_bytes = sum(df_log["bytes"])
     save_meta(
         meta_dir,
-        namespace,
         log_path,
         total_bytes,
         n_lines_parsed,
@@ -114,7 +112,7 @@ def parse_and_save_log_as_parquets(
     )
 
 
-def get_arguments():
+def get_arguments() -> [str, str, bool]:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--out_dir",
@@ -122,24 +120,27 @@ def get_arguments():
         help="",
     )
     parser.add_argument(
-        "--namespace", type=str, help="The namespace of the log file eg uniprotkb"
-    )
-    parser.add_argument(
         "--log_path",
         type=str,
         help="The path to the log file to parse",
     )
+    parser.add_argument(
+        "--legacy",
+        action="store_true",
+        default=False,
+        help="Flag to indicate if the log is from a legacy server (pre 2022-07)",
+    )
     args = parser.parse_args()
-    return args.out_dir, args.namespace, args.log_path
+    return args.out_dir, args.log_path, args.legacy
 
 
-def main():
-    out_dir, namespace, log_path = get_arguments()
+def main() -> None:
+    out_dir, log_path, is_legacy = get_arguments()
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     meta_dir = os.path.join(out_dir, "meta")
     Path(meta_dir).mkdir(exist_ok=True)
     save_meta_columns(meta_dir)
-    parse_and_save_log_as_parquets(out_dir, namespace, meta_dir, log_path)
+    parse_and_save_log_as_parquets(out_dir, meta_dir, log_path, is_legacy)
 
 
 if __name__ == "__main__":
