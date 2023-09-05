@@ -21,12 +21,12 @@ def get_chunk_date(filename):
 
 
 def get_chunks():
-    filenames = os.listdir()
     date_to_chunk_parquets = defaultdict(list)
-    for filename in filenames:
-        yyyy_mm = get_chunk_date(filename)
-        if yyyy_mm:
-            date_to_chunk_parquets[yyyy_mm].append(filename)
+    for filename in os.listdir():
+        if os.path.isfile(filename):
+            yyyy_mm = get_chunk_date(filename)
+            if yyyy_mm:
+                date_to_chunk_parquets[yyyy_mm].append(filename)
     return date_to_chunk_parquets
 
 
