@@ -34,21 +34,21 @@ def get_main_filename(date):
     return f"{date}.parquet"
 
 
-def get_parquets_list(parquets):
+def get_parquets_csv(parquets):
     return ",".join([f"'{p}'" for p in parquets])
 
 
 def merge_parquets(duckdb_con, from_parquets, to_parquet):
-    from_parquets = get_parquets_list(from_parquets)
     duckdb_con.sql(
-        f"COPY (SELECT * FROM [{from_parquets}]"
+        f"COPY (SELECT * FROM [{get_parquets_csv(from_parquets)}]"
         f" TO '{to_parquet}' (FORMAT 'parquet')"
     )
 
 
 def get_parquets_count(duckdb_con, parquets):
-    from_parquets = get_parquets_list(parquets)
-    return duckdb_con.sql(f"SELECT COUNT(*) FROM read_parquet([{from_parquets}])")
+    return duckdb_con.sql(
+        f"SELECT COUNT(*) FROM read_parquet([{get_parquets_csv(parquets)}])"
+    ).fetchone()[0]
 
 
 def remove_parquets(parquets: list[str]) -> None:
