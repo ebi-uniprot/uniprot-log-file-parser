@@ -40,7 +40,7 @@ def get_parquets_csv(parquets):
 
 def merge_parquets(duckdb_con, from_parquets, to_parquet):
     duckdb_con.sql(
-        f"COPY (SELECT * FROM read_parquet([{get_parquets_csv(from_parquets)}])"
+        f"COPY (SELECT * FROM read_parquet([{get_parquets_csv(from_parquets)}]))"
         f" TO '{to_parquet}' (FORMAT 'parquet')"
     )
 
