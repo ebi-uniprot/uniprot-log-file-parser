@@ -23,3 +23,9 @@ python -m uniprot_log_file_parser.parse_to_parquet \
 python -m uniprot_log_file_parser.merge \
 --working_dir '/path/to/parquet/files'
 ```
+
+# TODO
+
+- [ ] Create single configuration file in YAML
+- [ ] Create single point of execution for parse submission
+- [ ] Create merge slurm job
