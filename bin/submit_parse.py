@@ -38,7 +38,6 @@ def main():
     error_directory = os.path.join(results_directory, "error")
     log_file_list = os.path.join(results_directory, "log_file_list.txt")
     module_directory = "/homes/dlrice/uniprot-log-file-parser"
-    batch_script = os.path.join(module_directory, "bin", "parse_array_task.batch")
 
     pathlib.Path(out_directory).mkdir(parents=True, exist_ok=True)
     pathlib.Path(error_directory).mkdir(parents=True, exist_ok=True)
@@ -54,19 +53,19 @@ def main():
     n_logs = len(log_list)
 
     sbatch = f"""
-    sbatch
-    --time 2:00:00
-    --cpus-per-task 1
-    --partition datamover
-    --array=1-{n_logs}
-    --chdir={module_directory}
-    --output={out_directory}/parse_%A_%a.o
-    --error={out_directory}/parse_%A_%a.e
-    --ntasks=1
-    --mem=8G
-    {batch_script}
-    {log_file_list}
-    {results_directory}
+    sbatch \
+    --time 2:00:00 \
+    --cpus-per-task 1 \
+    --partition datamover \
+    --array=1-{n_logs} \
+    --chdir={module_directory} \
+    --output={out_directory}/parse_%A_%a.o \
+    --error={out_directory}/parse_%A_%a.e \
+    --ntasks=1 \
+    --mem=8G \
+    parse_array_task.batch \
+    {log_file_list} \
+    {results_directory} \
     {legacy if legacy else ''}
     """
 
