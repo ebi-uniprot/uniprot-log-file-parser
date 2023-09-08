@@ -1,4 +1,4 @@
-results_directory: /hps/nobackup/martin/uniprot/users/dlrice/aa
+results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/aa
 logs:
   - /nfs/public/rw/uniprot/k8s/rest/aa-rest/rest-app-aa-prod-*/logs/access_log.2022-06-*.log
   - /nfs/public/rw/uniprot/k8s/rest/aa-rest/rest-app-aa-prod-*/logs/access_log.2022-07-*.log

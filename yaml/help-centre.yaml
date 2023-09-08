@@ -1,4 +1,4 @@
-results_directory: /hps/nobackup/martin/uniprot/users/dlrice/help-centre
+results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/help-centre
 logs:
   - /nfs/public/rw/uniprot/k8s/rest/help-centre-rest/rest-app-help-centre-prod-*/logs/access_log.2022-06-*.log
   - /nfs/public/rw/uniprot/k8s/rest/help-centre-rest/rest-app-help-centre-prod-*/logs/access_log.2022-07-*.log

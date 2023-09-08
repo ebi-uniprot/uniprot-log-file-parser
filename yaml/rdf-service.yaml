@@ -1,4 +1,4 @@
-results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rdf-service
+results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/rdf-service
 logs:
   - /nfs/public/rw/uniprot/k8s/rest/rdf-service-prod/rdf-service-prod-*/logs/access_log.2022-06-*.log
   - /nfs/public/rw/uniprot/k8s/rest/rdf-service-prod/rdf-service-prod-*/logs/access_log.2022-07-*.log

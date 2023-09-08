@@ -1,4 +1,4 @@
-results_directory: /hps/nobackup/martin/uniprot/users/dlrice/uniparc
+results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/uniparc
 logs:
   - /nfs/public/rw/uniprot/k8s/rest/uniparc-rest/rest-app-uniparc-prod-*/logs/access_log.2022-06-*.log
   - /nfs/public/rw/uniprot/k8s/rest/uniparc-rest/rest-app-uniparc-prod-*/logs/access_log.2022-07-*.log
