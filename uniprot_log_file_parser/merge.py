@@ -60,7 +60,7 @@ def remove_parquets(parquets: list[str]) -> None:
 def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--parquet_dir",
+        "parquet_dir",
         type=str,
         help="The directory where the parquet files will be collected, "
         "merged and saved",
