@@ -1,5 +1,8 @@
 #!/bin/bash
-source bin/config.sh
+
+LOG_FILE_LIST=$1
+RESULTS_DIRECTORY=$2
+LEGACY=$3
 
 log_path=$(head -n $SLURM_ARRAY_TASK_ID $LOG_FILE_LIST | tail -1)
 

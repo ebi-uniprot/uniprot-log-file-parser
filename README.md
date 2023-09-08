@@ -26,6 +26,6 @@ python -m uniprot_log_file_parser.merge \
 
 # TODO
 
-- [ ] Create single configuration file in YAML
-- [ ] Create single point of execution for parse submission
+- [x] Create single configuration file in YAML
+- [x] Create single point of execution for parse submission
 - [ ] Create merge slurm job
