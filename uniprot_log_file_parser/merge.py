@@ -60,18 +60,18 @@ def remove_parquets(parquets: list[str]) -> None:
 def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--working_dir",
+        "--parquet_dir",
         type=str,
         help="The directory where the parquet files will be collected, "
         "merged and saved",
     )
     args = parser.parse_args()
-    return args.working_dir
+    return args.parquet_dir
 
 
 def main():
-    working_dir = get_arguments()
-    os.chdir(working_dir)
+    parquet_dir = get_arguments()
+    os.chdir(parquet_dir)
     duckdb_con = get_duckdb_connection()
     chunks = get_chunks()
     for yyyy_mm, chunk_parquets in chunks.items():
