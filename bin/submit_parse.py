@@ -53,7 +53,7 @@ def main():
 
     sbatch = f"""
     sbatch \
-    --time 2:00 \
+    --time 2:00:00 \
     --cpus-per-task 1 \
     --partition datamover \
     --array=1-{n_logs} \
@@ -61,7 +61,7 @@ def main():
     --output={out_directory}/parse_%A_%a.o \
     --error={out_directory}/parse_%A_%a.e \
     --ntasks=1 \
-    --mem=100 \
+    --mem=8G \
     parse_array_task.batch \
     {log_file_list} \
     {results_directory} \
