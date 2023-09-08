@@ -1,0 +1,9 @@
+results_directory: /hps/nobackup/martin/uniprot/users/dlrice/proteome
+logs:
+  - /nfs/public/rw/uniprot/k8s/rest/proteome-rest/rest-app-proteome-prod-*/logs/access_log.2022-06-*.log
+  - /nfs/public/rw/uniprot/k8s/rest/proteome-rest/rest-app-proteome-prod-*/logs/access_log.2022-07-*.log
+  - /nfs/public/rw/uniprot/k8s/rest/proteome-rest/rest-app-proteome-prod-*/logs/access_log.2022-08-*.log
+  - /nfs/public/rw/uniprot/k8s/rest/proteome-rest/rest-app-proteome-prod-*/logs/access_log.2022-09-*.log
+  - /nfs/public/rw/uniprot/k8s/rest/proteome-rest/rest-app-proteome-prod-*/logs/access_log.2022-10-*.log
+  - /nfs/public/rw/uniprot/k8s/rest/proteome-rest/rest-app-proteome-prod-*/logs/access_log.2022-11-*.log
+  - /nfs/public/rw/uniprot/k8s/rest/proteome-rest/rest-app-proteome-prod-*/logs/access_log.2022-12-*.log
