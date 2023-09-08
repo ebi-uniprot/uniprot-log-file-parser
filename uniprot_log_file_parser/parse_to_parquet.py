@@ -117,7 +117,7 @@ def get_arguments() -> [str, str, bool]:
     parser.add_argument(
         "--out_dir",
         type=str,
-        help="",
+        help="The directory where the parquets, job details and meta will be stored",
     )
     parser.add_argument(
         "--log_path",
