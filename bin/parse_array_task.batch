@@ -6,7 +6,12 @@ LEGACY=$3
 
 log_path=$(head -n $SLURM_ARRAY_TASK_ID $LOG_FILE_LIST | tail -1)
 
-python -m uniprot_log_file_parser.parse_to_parquet \
---out_dir $RESULTS_DIRECTORY \
---log_path $log_path \
-${LEGACY:+ --legacy}
+echo $log_path
+echo $LOG_FILE_LIST
+echo $RESULTS_DIRECTORY
+echo $LEGACY
+
+# python -m uniprot_log_file_parser.parse_to_parquet \
+# --out_dir $RESULTS_DIRECTORY \
+# --log_path $log_path \
+# ${LEGACY:+ --legacy}

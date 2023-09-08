@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import os
 import pathlib
-
-# import subprocess
+import subprocess
 import argparse
 from glob import glob
 import yaml
@@ -54,7 +53,7 @@ def main():
 
     sbatch = f"""
     sbatch \
-    --time 2:00:00 \
+    --time 2:00 \
     --cpus-per-task 1 \
     --partition datamover \
     --array=1-{n_logs} \
@@ -62,19 +61,18 @@ def main():
     --output={out_directory}/parse_%A_%a.o \
     --error={out_directory}/parse_%A_%a.e \
     --ntasks=1 \
-    --mem=8G \
+    --mem=100 \
     parse_array_task.batch \
     {log_file_list} \
     {results_directory} \
     {legacy if legacy else ''}
     """
 
-    print(sbatch)
-    # result = subprocess.run(
-    #     [sbatch], shell=True, capture_output=True, text=True, check=True
-    # )
-    # print(result.stdout)
-    # print(result.stderr)
+    result = subprocess.run(
+        [sbatch], shell=True, capture_output=True, text=True, check=True
+    )
+    print(result.stdout)
+    print(result.stderr)
 
 
 if __name__ == "__main__":
