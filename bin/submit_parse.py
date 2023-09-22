@@ -18,7 +18,7 @@ def get_arguments() -> [str]:
     return args.config
 
 
-def main():
+def main() -> None:
     config_path = get_arguments()
     with open(config_path, encoding="utf-8") as file:
         config = yaml.safe_load(file)
