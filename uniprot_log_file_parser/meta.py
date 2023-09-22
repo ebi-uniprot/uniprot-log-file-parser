@@ -3,19 +3,19 @@ import csv
 from collections import defaultdict
 
 
-def encode_log_path(log_path: str):
+def encode_log_path(log_path: str) -> str:
     return os.path.abspath(log_path)[1:].replace("/", "_")
 
 
-def get_meta_path_for_log_path(meta_dir: str, log_path: str):
+def get_meta_path_for_log_path(meta_dir: str, log_path: str) -> str:
     return os.path.join(meta_dir, encode_log_path(log_path))
 
 
-def in_meta(meta_dir: str, log_path: str):
+def in_meta(meta_dir: str, log_path: str) -> bool:
     return os.path.exists(get_meta_path_for_log_path(meta_dir, log_path))
 
 
-def save_meta_columns(meta_dir):
+def save_meta_columns(meta_dir) -> None:
     columns = [
         "log_path",
         "total_bytes",
@@ -42,7 +42,7 @@ def save_meta(
     lines_imported: int,
     lines_skipped: int,
     status_counts: defaultdict,
-):
+) -> None:
     log_meta_path = get_meta_path_for_log_path(meta_dir, log_path)
     if os.path.exists(log_meta_path):
         raise FileExistsError(log_meta_path)
