@@ -1,3 +1,3 @@
-results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/rdf-service
+results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/fallback/rdf-service
 logs:
-  - /nfs/public/rw/uniprot/k8s/rest/rdf-service-prod/rdf-service-prod-*/logs/access_log.2023-05-*.log
+  - /hps/nobackup/martin/uniprot/users/dlrice/rest-fallback-logs/rdf-service-fallback/rdf-service-fallback-*/logs/access_log.2023*.log

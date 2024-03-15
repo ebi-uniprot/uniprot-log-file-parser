@@ -1,3 +1,3 @@
-results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/unisave
+results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/fallback/unisave
 logs:
-  - /nfs/public/rw/uniprot/k8s/rest/unisave-rest/rest-app-unisave-prod-*/logs/access_log.2023-05-*.log
+  - /hps/nobackup/martin/uniprot/users/dlrice/rest-fallback-logs/unisave-rest/rest-app-unisave-fallback-*/logs/access_log.2023*.log

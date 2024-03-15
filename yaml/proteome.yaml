@@ -1,3 +1,3 @@
-results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/proteome
+results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/fallback/proteome
 logs:
-  - /nfs/public/rw/uniprot/k8s/rest/proteome-rest/rest-app-proteome-prod-*/logs/access_log.2023-05-*.log
+  - /hps/nobackup/martin/uniprot/users/dlrice/rest-fallback-logs/proteome-rest/rest-app-proteome-fallback-*/logs/access_log.2023*.log
