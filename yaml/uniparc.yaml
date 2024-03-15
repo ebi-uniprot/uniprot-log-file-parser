@@ -1,3 +1,3 @@
 results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/fallback/uniparc
 logs:
-  - /hps/nobackup/martin/uniprot/users/dlrice/rest-fallback-logs/uniparc-rest/rest-app-uniparc-fallback-*/logs/access_log.2023-05*.log
+  - /hps/nobackup/martin/uniprot/users/dlrice/rest-fallback-logs/uniparc-rest/rest-app-uniparc-fallback-*/logs/access_log.2023*.log
