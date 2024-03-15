@@ -1,0 +1,3 @@
+results_directory: /hps/nobackup/martin/uniprot/users/dlrice/rest-log-parquets/prod/aa
+logs:
+  - /nfs/public/rw/uniprot/k8s/rest/aa-rest/rest-app-aa-prod-*/logs/access_log.2023*.log
